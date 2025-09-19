@@ -1,0 +1,21 @@
+.form-email {
+    width: 100%;
+}.form-password {
+    width: 100%;
+}.form-submit {
+    width: 100%;
+}
+.forgot-password-container {
+    margin: auto auto auto auto;
+    text-align: end;
+    padding-top: 10px;
+}.forgot-password-link {
+    color: #e28513;
+}.forgot-password-link:hover,
+.forgot-password-link:focus {
+    transition: 0.5s;
+    border-bottom-width: 10px;
+    border-bottom-style: dotted;
+    border-radius: 50%;
+}
+

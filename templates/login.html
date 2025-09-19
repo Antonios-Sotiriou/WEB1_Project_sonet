@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../styles/login.css">
+
+    <title>Document</title>
+</head>
+<body>
+	<div class="form-container">
+		<form class="form-form" method='POST'>
+            <label for="username">Username:</label>
+            <input type="text" name="username"><br>
+            <label for="password">Password:</label>
+            <input type="text" name="password"><br>
+			<input class="form-submit" type="submit" name="submit_login" value="Log in" formaction="{% url 'login' %}">
+		</form>
+
+		<div class="forgot-password-container">
+			<small>
+                <a class="forgot-password-link" href="{% url 'password_reset' %}">Forgot Password?</a>
+            </small>
+        </div>
+	</div>
+
+	<div class="form-errors-container">
+
+	</div>
+	
+	<div class="form-bottom-links-container">
+        <small>Need An Account?
+            <a class='form-bottom-links-link' href="{% url 'register' %}">Sign Up Now</a>
+        </small>
+	</div>
+</body>
+</html>
