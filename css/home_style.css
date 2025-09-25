@@ -12,8 +12,10 @@ body {
 
 .body-fluid {
     margin-top: 0;
-    margin-left: 5em;
-    margin-right: 5em;
+}
+
+#nav-bar {
+    min-width: 290px;
 }
 
 #nav-app-name {
@@ -24,6 +26,11 @@ body {
 
 #navbarNavDropdown {
     justify-content: end;
+}
+
+#drop-down-window {
+    left: unset;
+    right: 0%;
 }
 
 #user-image {
@@ -42,13 +49,16 @@ body {
 
 .posts-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
 .article-main-container {
-    margin: 5vh;
-    max-width: 700px;
-    min-width: 475px;
+    align-self: center;
+    padding-top: 1vh;
+    width: 60%;
+    max-width: 600px;
+    min-width: 290px;
 }
 
 .post-header {

@@ -1,5 +1,7 @@
 <?php
-    include "connect.php";
+    include("functions.php");
+
+    $conn = dbconnect();
 
     if (isset($_POST["signIn"])) {
         $email = $_POST["email"];

@@ -1,6 +1,8 @@
 <?php
     session_start();
-    include("connect.php");
+    include("functions.php");
+
+    $conn = dbconnect();
 
     if (isset($_SESSION["email"])) {
         $email = $_SESSION["email"];
@@ -12,16 +14,20 @@
                 $GLOBALS["email"] = $row["email"];
                 $user_id = $row["id"];
         }
-        if(isset($_POST["postCreate"])) {
-            echo "TEST CASE REACHED";
-            $content = $_POST["content"];
-            $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
-            if ($conn->query($insertQuery) == TRUE) {
-                echo "$content";
-                // header("location: home.php");
-            } else {
-                echo "An error has occured!".$conn->error;
+        if(isset($_POST["profileUpdate"])) {
+            if (!empty($_POST["firstName"]) || !empty($_POST["lastName"])) {
+                echo "TEST CASE 1 REACHED";
             }
+            if (!empty($_POST["uploadPhoto"])) {
+                echo "TEST CASE 2 REACHED";
+            }
+            // $content = $_POST["updateProfile"];
+            // $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
+            // if ($conn->query($insertQuery) == TRUE) {
+            //     // header("location: home.php");
+            // } else {
+            //     echo "An error has occured!".$conn->error;
+            // }
         }
     }
 ?>
@@ -36,7 +42,7 @@
     <link rel="stylesheet" href="css/forms_style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <title>Document</title>
+    <title>Profile</title>
 </head>
 <body>
     <div class="container" id="profile-update-container">
@@ -49,12 +55,12 @@
         <form method="post" action="profile.php">
 
             <div class="input-group">
-                <input type="text" name="firstName" id="first-name" placeholder="First Name" required>
-                <label for="first-name">First Name</label>
+                <input type="text" name="firstName" id="first-name" placeholder="First Name">
+                <label for="first-name"><?php echo $GLOBALS["first_name"] ?></label>
             </div>
             <div class="input-group">
-                <input type="text" name="lastName" id="last-name" placeholder="Last Name" required>
-                <label for="last-name">Last Name</label>
+                <input type="text" name="lastName" id="last-name" placeholder="Last Name">
+                <label for="last-name"><?php echo $GLOBALS["last_name"] ?></label>
             </div>
 
             <div>
@@ -62,11 +68,11 @@
                     <small class="custom-file-label" for="inputGroupFile">Upload a profile photo</small>
                 </div>
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="inputGroupFile">
+                    <input type="file" class="custom-file-input" id="inputGroupFile" name="uploadPhoto">
                 </div>
             </div>
 
-            <input type="submit" class="btn-submit" value="Update" name="Update">
+            <input type="submit" class="btn-submit" value="Update" name="profileUpdate">
         </form>
 
         <p class="or">

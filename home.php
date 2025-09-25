@@ -1,21 +1,20 @@
 <?php
     session_start();
-    include("connect.php");
+    include("functions.php");
+
+    $conn = dbconnect();
 
     if (isset($_SESSION["email"])) {
         $email = $_SESSION["email"];
         $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
         while ($row = mysqli_fetch_array($query)) {
-                $GLOBALS["user_id"] = $row["id"];
-                $GLOBALS["first_name"] = $row["first_name"];
-                $GLOBALS["last_name"] = $row["last_name"];
-                $GLOBALS["email"] = $row["email"];
-                // $GLOBALS["profile_photo_url"] = $row["profile_photo_url"];
+            $GLOBALS["user_id"] = $row["id"];
+            $GLOBALS["first_name"] = $row["first_name"];
+            $GLOBALS["last_name"] = $row["last_name"];
+            $GLOBALS["email"] = $row["email"];
+            // $GLOBALS["profile_photo_url"] = $row["profile_photo_url"];
         }
     }
-?>
-<?php
-    $names = ["Antonios", "Georgios", "Panagiotis", "Nikolaos", "Artemisia"];
 ?>
 
 <!DOCTYPE html>
@@ -31,13 +30,18 @@
 </head>
 <body class="body-fluid">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="nav-bar">
         <div class="container-fluid">
+
             <a class="navbar-brand" href="home.php" id="nav-app-name">Sonet</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+                <?php echo $GLOBALS["first_name"].' '.$GLOBALS["last_name"] ?>
+    
                 <ul class="navbar-nav">
 
                    <!-- REGISTER OR LOGIN -->
@@ -62,7 +66,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Options
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="drop-down-window">
 
                             <!-- REGISTER OR LOGIN -->
                                 <?php
@@ -101,88 +105,78 @@
         </div>
     </nav>
 
+    <?php $posts = fetchPosts(); ?>
+
     <div class="posts-container">
-        <!-- <div class="col"> -->
-            <div class="article-main-container">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="post-header" style="display: flex;">
-                            
-                            <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
-                            
-                            <div class="user-post-info">
-                                Kenneth Frazier
-                                <div class="text-muted small">3 days ago</div>
-                            </div>
-                        </div>
-                    
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus finibus commodo bibendum. Vivamus laoreet blandit odio, vel finibus quam dictum ut.
-                        </p>
-                    </div>
 
-                    <!-- The infos above the Buttons at the footer of the Post. -->
-                    <div class="post-footer">
-                        <div class="post-footer-info-container">
-                            <div class="post-footer-info">
-                                123 Likes
+        <?php foreach($posts as $post) { ?>
+
+            <!-- <div class="single-post-container"> -->
+                <div class="article-main-container">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="post-header" style="display: flex;">
+                                
+                                <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
+                                
+                                <div class="user-post-info">
+                                    <?php echo $post["first_name"].' '.$post["last_name"] ?>
+                                    <div class="text-muted small"><?php echo $post["created"] ?></div>
+                                </div>
                             </div>
-                            <div class="post-footer-info">
-                                12 Comments
-                            </div>
-                            <div class="post-footer-info">
-                                32 Dislikes
-                            </div>
+                        
+                            <p>
+                                <div style="text"><?php echo $post["content"] ?></div>
+                            </p>
                         </div>
 
-                        <!-- The Buttons at the footer of the Post. -->
-                        <div class="post-footer-interactions-container">
-
-                            <div class="post-footer-interactions">
-                                <form action="" method="post">
-                                    <input type="image" alt="" class="post-interactions-image" src="images/like.png">
-                                </form>
+                        <!-- The infos above the Buttons at the footer of the Post. -->
+                        <div class="post-footer">
+                            <div class="post-footer-info-container">
+                                <div class="post-footer-info">
+                                    123 Likes
+                                </div>
+                                <div class="post-footer-info">
+                                    12 Comments
+                                </div>
+                                <div class="post-footer-info">
+                                    32 Dislikes
+                                </div>
                             </div>
 
-                            <div class="post-footer-interactions">
-                                <input type="image" class="post-interactions-image" src="images/comment.png" alt="">
-                            </div>
+                            <!-- The Buttons at the footer of the Post. -->
+                            <div class="post-footer-interactions-container">
 
-                            <div class="post-footer-interactions">
-                                <form action="" method="post">
-                                    <input type="image" alt="" class="post-interactions-image" src="images/dislike.png">
-                                </form>
-                            </div>
+                                <div class="post-footer-interactions">
+                                    <form action="" method="post">
+                                        <input type="image" alt="" class="post-interactions-image" src="images/like.png">
+                                    </form>
+                                </div>
 
+                                <div class="post-footer-interactions">
+                                    <div>
+                                        <a href="comment.php">
+                                            <img src="images/comment.png" class="post-interactions-image" alt="">
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="post-footer-interactions">
+                                    <form action="" method="post">
+                                        <input type="image" alt="" class="post-interactions-image" src="images/dislike.png">
+                                    </form>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        <!-- </div> -->
-    </div>
+            <!-- </div> -->
 
-    <div style="text-align:center; padding:15%;">
-        <p style="font-size:50px; font-weight:bold;">
-            Hello
-            <?php
-                if (isset($_SESSION["email"])) {
-                    $email = $_SESSION["email"];
-                    $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
-                    while ($row = mysqli_fetch_array($query)) {
-                        echo $GLOBALS["first_name"].''.$GLOBALS["last_name"];
-                    }
-                } else {
-                    echo "You are not Logged in!";
-                }
-            ?>
-        </p>
+        <?php
+            }
+        ?>
     </div>
-
-    <!-- <?php foreach($names as $name) { ?>
-        <h1>
-            <?= $name ?>
-        </h1>
-    <?php } ?> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 

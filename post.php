@@ -1,6 +1,9 @@
 <?php
     session_start();
-    include("connect.php");
+    include("functions.php");
+
+    $conn = dbconnect();
+    fetchCurrentUser();
 
     if (isset($_SESSION["email"])) {
         $email = $_SESSION["email"];
@@ -13,12 +16,11 @@
                 $user_id = $row["id"];
         }
         if(isset($_POST["postCreate"])) {
-            echo "TEST CASE REACHED";
             $content = $_POST["content"];
             $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
             if ($conn->query($insertQuery) == TRUE) {
                 echo "$content";
-                // header("location: home.php");
+                header("location: home.php");
             } else {
                 echo "An error has occured!".$conn->error;
             }

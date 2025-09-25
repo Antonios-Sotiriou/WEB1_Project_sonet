@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>This is the Admin Panel</h1>
+    <h1>This is a Comment Page!</h1>
 </body>
 </html>
