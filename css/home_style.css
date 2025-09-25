@@ -1,0 +1,96 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"poppins",sans-serif;
+}
+
+body {
+    background-color: #c9d6ff;
+    background:linear-gradient(to right,#e2e2e2,#c9d6ff);
+}
+
+.body-fluid {
+    margin-top: 0;
+    margin-left: 5em;
+    margin-right: 5em;
+}
+
+#nav-app-name {
+    text-align: center;
+    font-size: 50px;
+    margin-left: 5vh;
+}
+
+#navbarNavDropdown {
+    justify-content: end;
+}
+
+#user-image {
+    align-items: center;
+    margin: 0.5em;
+    border-radius: 50%;
+}
+
+.col-md-8 {
+    margin: auto;
+}
+
+/*==================================================
+  Post Contents CSS
+  ==================================================*/
+
+.posts-container {
+    display: flex;
+    justify-content: center;
+}
+
+.article-main-container {
+    margin: 5vh;
+    max-width: 700px;
+    min-width: 475px;
+}
+
+.post-header {
+    display: flex;
+}
+
+.user-post-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0.5vh;
+}
+
+.user-post-info {
+    margin-left: 0.5vh;
+}
+
+.post-footer {
+    background-color: oldlace;
+}
+
+.post-footer-info-container {
+    display: flex;
+}
+
+.post-footer-info {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+}
+
+.post-footer-interactions-container {
+    display: flex;
+}
+
+.post-footer-interactions {
+    flex: 1;
+    text-align: center;
+}
+
+.post-interactions-image {
+    width: 30px;
+    height: 30px;
+}
+

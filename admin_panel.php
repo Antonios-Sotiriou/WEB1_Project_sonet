@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FHBuch</title>
+    <title>Document</title>
 </head>
 <body>
-    <h1>Soziale Netzwerk</h1>
+    <h1>Admin Panel</h1>
+    Admin Panel
 </body>
 </html>

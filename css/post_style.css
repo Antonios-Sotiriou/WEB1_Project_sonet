@@ -1,0 +1,23 @@
+.post-create-container {
+    display: flex;
+    justify-content: center;
+}
+.user-post-info {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.post-create-text-input {
+    field-sizing: content;
+}
+
+#post-btn {
+    margin-top: 1vh;
+    margin-right: 1vh;
+    margin-bottom: 1vh;
+}
+
+#cancel-btn {
+    margin: 1vh;
+    background-color: lightcoral;
+}

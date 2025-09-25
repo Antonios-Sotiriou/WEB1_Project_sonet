@@ -1,0 +1,81 @@
+<?php
+    session_start();
+    include("connect.php");
+
+    if (isset($_SESSION["email"])) {
+        $email = $_SESSION["email"];
+        $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
+        while ($row = mysqli_fetch_array($query)) {
+                $GLOBALS["user_id"] = $row["id"];
+                $GLOBALS["first_name"] = $row["first_name"];
+                $GLOBALS["last_name"] = $row["last_name"];
+                $GLOBALS["email"] = $row["email"];
+                $user_id = $row["id"];
+        }
+        if(isset($_POST["postCreate"])) {
+            echo "TEST CASE REACHED";
+            $content = $_POST["content"];
+            $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
+            if ($conn->query($insertQuery) == TRUE) {
+                echo "$content";
+                // header("location: home.php");
+            } else {
+                echo "An error has occured!".$conn->error;
+            }
+        }
+    }
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/home_style.css">
+    <link rel="stylesheet" href="css/post_style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <title>Post</title>
+</head>
+<body>
+    <div class="post-create-container">
+        <div class="article-main-container">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="post-header">
+                        
+                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
+                        
+                        <div class="user-post-info">
+                            <?php
+                                echo $GLOBALS["first_name"].''.$GLOBALS["last_name"];
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="container" id="signIn">
+
+                        <h1 class="form-title">What would you like to publish?</h1>
+                        <form method="post" action="post.php">
+                            <div class="input-group">
+                                <textarea class="form-control" aria-label="With textarea" name="content"></textarea>
+                            </div>
+
+                            <div>
+                                <button type="submit" class="btn btn-primary" id="post-btn" name="postCreate">Post</button>
+                                <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Cancel</a>
+                            </div>
+                        </form>
+
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+</body>
+</html>

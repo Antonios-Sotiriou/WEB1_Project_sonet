@@ -1,0 +1,32 @@
+#profile-update-container {
+    max-width: 400px;
+    min-width: 375px;
+    background-color: rgb(255, 255, 255);
+    padding: 1vh;
+    margin-top: 10vh;
+}
+
+.profile-photo-container {
+    display: flex;
+    justify-content: center;
+}
+
+.profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.custom-file-input {
+    margin-bottom: 5px;
+    padding: 0;
+}
+
+.profile-cancel-btn {
+    margin: 0 2rem;
+}
+
+#cancel-btn {
+    margin: 0;
+    background-color: lightcoral;
+}
