@@ -3,18 +3,10 @@
     include("functions.php");
 
     $conn = dbconnect();
-    fetchCurrentUser();
 
     if (isset($_SESSION["email"])) {
-        $email = $_SESSION["email"];
-        $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
-        while ($row = mysqli_fetch_array($query)) {
-                $GLOBALS["user_id"] = $row["id"];
-                $GLOBALS["first_name"] = $row["first_name"];
-                $GLOBALS["last_name"] = $row["last_name"];
-                $GLOBALS["email"] = $row["email"];
-                $user_id = $row["id"];
-        }
+        $GLOBALS["active_user"] = fetchCurrentUser($conn);
+
         if(isset($_POST["postCreate"])) {
             $content = $_POST["content"];
             $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
@@ -51,7 +43,7 @@
                         
                         <div class="user-post-info">
                             <?php
-                                echo $GLOBALS["first_name"].''.$GLOBALS["last_name"];
+                                echo $GLOBALS["active_user"]["first_name"].''.$GLOBALS["active_user"]["last_name"];
                             ?>
                         </div>
                     </div>

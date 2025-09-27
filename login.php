@@ -8,7 +8,7 @@
         $password = $_POST["password"];
         $password = md5($password);
 
-        $retrieve_user = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+        $retrieve_user = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
         $result = $conn->query($retrieve_user);
         if ($result->num_rows > 0) {
             session_start();

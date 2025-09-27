@@ -5,29 +5,56 @@
     $conn = dbconnect();
 
     if (isset($_SESSION["email"])) {
-        $email = $_SESSION["email"];
-        $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
-        while ($row = mysqli_fetch_array($query)) {
-                $GLOBALS["user_id"] = $row["id"];
-                $GLOBALS["first_name"] = $row["first_name"];
-                $GLOBALS["last_name"] = $row["last_name"];
-                $GLOBALS["email"] = $row["email"];
-                $user_id = $row["id"];
-        }
+        $GLOBALS["active_user"] = fetchCurrentUser($conn);
+
         if(isset($_POST["profileUpdate"])) {
-            if (!empty($_POST["firstName"]) || !empty($_POST["lastName"])) {
-                echo "TEST CASE 1 REACHED";
+            $user_id = $GLOBALS["active_user"]["user_id"];
+
+            if (!empty($_POST["firstName"])) {
+                $first_name = $_POST["firstName"];
+                $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE id = $user_id";
+                if ($conn->query($insertQuery) == TRUE) {
+                    echo "<h3>Profile first Name Updated</h3>";
+                }
             }
-            if (!empty($_POST["uploadPhoto"])) {
-                echo "TEST CASE 2 REACHED";
+            if (!empty($_POST["lastName"])) {
+                $last_name = $_POST["lastName"];
+                $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE id = '$user_id'";
+                if ($conn->query($insertQuery) == TRUE) {
+                    echo "<h3>Profile last Name Updated</h3>";
+                }
             }
-            // $content = $_POST["updateProfile"];
-            // $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
-            // if ($conn->query($insertQuery) == TRUE) {
-            //     // header("location: home.php");
-            // } else {
-            //     echo "An error has occured!".$conn->error;
-            // }
+
+            if (!empty($_FILES["uploadPhoto"]["name"])) {
+                $folder = 'media/'.$GLOBALS["active_user"]["md_email"].'/';
+                $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
+
+                if (!is_dir($folder)) {
+                    mkdir($folder, recursive: true);
+                }
+
+                if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
+                    $img_name = $_FILES["uploadPhoto"]["name"];
+
+                    $check_entry = "SELECT * FROM prof_images WHERE user_id='$user_id'";
+                    $result = $conn->query($check_entry);
+                    if ($result->num_rows > 0) {
+                        $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
+                        if ($conn->query($updateQuery) == TRUE) {
+                            header("Location: profile.php");
+                        } else {
+                            echo "<h3>File update failed!!!</h3>";
+                        }
+                    } else {
+                        $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
+                        if ($conn->query($insertQuery) == TRUE) {
+                            header("Location: profile.php");
+                        }
+                    }
+                } else {
+                    echo "<h3>File upload failed!!!</h3>";
+                }
+            }
         }
     }
 ?>
@@ -48,19 +75,27 @@
     <div class="container" id="profile-update-container">
 
         <div class="profile-photo-container">
-            <img class="profile-photo" src="images/default_user.jpg" alt="">
+            <?php
+                if (isset($_SESSION["email"])) {
+            ?>
+                    <img class="profile-photo" src=<?php echo $GLOBALS["active_user"]["profile_image"] ?> alt="">
+            <?php
+                } else {
+                    echo '<img class="profile-photo" src="images/default_user.jpg" alt="">';
+                }
+            ?>
         </div>
 
         <h1 class="form-title">Profile</h1>
-        <form method="post" action="profile.php">
+        <form method="post" action="profile.php" enctype="multipart/form-data">
 
             <div class="input-group">
                 <input type="text" name="firstName" id="first-name" placeholder="First Name">
-                <label for="first-name"><?php echo $GLOBALS["first_name"] ?></label>
+                <label for="first-name"><?php echo $GLOBALS["active_user"]["first_name"] ?></label>
             </div>
             <div class="input-group">
                 <input type="text" name="lastName" id="last-name" placeholder="Last Name">
-                <label for="last-name"><?php echo $GLOBALS["last_name"] ?></label>
+                <label for="last-name"><?php echo $GLOBALS["active_user"]["last_name"] ?></label>
             </div>
 
             <div>

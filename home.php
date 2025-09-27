@@ -5,15 +5,7 @@
     $conn = dbconnect();
 
     if (isset($_SESSION["email"])) {
-        $email = $_SESSION["email"];
-        $query = mysqli_query($conn, "SELECT * FROM users WHERE users.email='$email'");
-        while ($row = mysqli_fetch_array($query)) {
-            $GLOBALS["user_id"] = $row["id"];
-            $GLOBALS["first_name"] = $row["first_name"];
-            $GLOBALS["last_name"] = $row["last_name"];
-            $GLOBALS["email"] = $row["email"];
-            // $GLOBALS["profile_photo_url"] = $row["profile_photo_url"];
-        }
+        $GLOBALS["active_user"] = fetchCurrentUser($conn);
     }
 ?>
 
@@ -40,7 +32,7 @@
 
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
-                <?php echo $GLOBALS["first_name"].' '.$GLOBALS["last_name"] ?>
+                <?php echo $GLOBALS["active_user"]["first_name"].' '.$GLOBALS["active_user"]["last_name"] ?>
     
                 <ul class="navbar-nav">
 
