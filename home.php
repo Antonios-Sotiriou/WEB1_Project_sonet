@@ -145,7 +145,7 @@
 
                                 <div class="post-footer-interactions">
                                     <div>
-                                        <a href="comment.php">
+                                        <a href="comment.php?id=<?php echo $post['post_id']; ?>">
                                             <img src="images/comment.png" class="post-interactions-image" alt="">
                                         </a>
                                     </div>
