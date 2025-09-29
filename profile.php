@@ -4,7 +4,7 @@
 
     $conn = dbconnect();
 
-    if (isset($_SESSION["email"])) {
+    // if (isset($_SESSION["email"])) {
         $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
         if(isset($_POST["profileUpdate"])) {
@@ -14,14 +14,14 @@
                 $first_name = $_POST["firstName"];
                 $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE id = $user_id";
                 if ($conn->query($insertQuery) == TRUE) {
-                    echo "<h3>Profile first Name Updated</h3>";
+                    header("Location: profile.php");
                 }
             }
             if (!empty($_POST["lastName"])) {
                 $last_name = $_POST["lastName"];
                 $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE id = '$user_id'";
                 if ($conn->query($insertQuery) == TRUE) {
-                    echo "<h3>Profile last Name Updated</h3>";
+                    header("Location: profile.php");
                 }
             }
 
@@ -56,7 +56,7 @@
                 }
             }
         }
-    }
+    // }
 ?>
 
 <!DOCTYPE html>

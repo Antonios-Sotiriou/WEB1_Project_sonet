@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 27. Sep 2025 um 16:57
+-- Erstellungszeit: 29. Sep 2025 um 13:02
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `dislikes` (
-  `id` int(11) NOT NULL,
+  `dislike_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -40,7 +40,7 @@ CREATE TABLE `dislikes` (
 --
 
 CREATE TABLE `likes` (
-  `id` int(11) NOT NULL,
+  `like_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -52,7 +52,7 @@ CREATE TABLE `likes` (
 --
 
 CREATE TABLE `posts` (
-  `id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) NOT NULL,
   `content` varchar(2048) NOT NULL
@@ -62,7 +62,7 @@ CREATE TABLE `posts` (
 -- Daten für Tabelle `posts`
 --
 
-INSERT INTO `posts` (`id`, `created`, `user_id`, `content`) VALUES
+INSERT INTO `posts` (`post_id`, `created`, `user_id`, `content`) VALUES
 (1, '2025-09-25 02:34:43', 1, ''),
 (2, '2025-09-25 02:35:27', 1, ''),
 (3, '2025-09-25 02:45:00', 1, ''),
@@ -79,7 +79,7 @@ INSERT INTO `posts` (`id`, `created`, `user_id`, `content`) VALUES
 --
 
 CREATE TABLE `prof_images` (
-  `id` int(11) NOT NULL,
+  `img_id` int(11) NOT NULL,
   `img_name` varchar(100) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -88,8 +88,8 @@ CREATE TABLE `prof_images` (
 -- Daten für Tabelle `prof_images`
 --
 
-INSERT INTO `prof_images` (`id`, `img_name`, `user_id`) VALUES
-(20, 'terrain_normal_map100x100.bmp', 1);
+INSERT INTO `prof_images` (`img_id`, `img_name`, `user_id`) VALUES
+(20, 'stones64x64.bmp', 1);
 
 -- --------------------------------------------------------
 
@@ -121,7 +121,7 @@ INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`) VALUE
 -- Indizes für die Tabelle `dislikes`
 --
 ALTER TABLE `dislikes`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`dislike_id`),
   ADD KEY `dukey` (`user_id`),
   ADD KEY `lukey` (`post_id`);
 
@@ -129,20 +129,20 @@ ALTER TABLE `dislikes`
 -- Indizes für die Tabelle `likes`
 --
 ALTER TABLE `likes`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`like_id`);
 
 --
 -- Indizes für die Tabelle `posts`
 --
 ALTER TABLE `posts`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`post_id`),
   ADD KEY `pukey` (`user_id`);
 
 --
 -- Indizes für die Tabelle `prof_images`
 --
 ALTER TABLE `prof_images`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`img_id`),
   ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
@@ -159,25 +159,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `dislikes`
 --
 ALTER TABLE `dislikes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `dislike_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `likes`
 --
 ALTER TABLE `likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT für Tabelle `prof_images`
 --
 ALTER TABLE `prof_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
@@ -194,7 +194,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `dislikes`
   ADD CONSTRAINT `dukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `lukey` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `lukey` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `posts`

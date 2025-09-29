@@ -31,6 +31,12 @@ function fetchCurrentUser($conn) {
                 $globals["profile_image"] = "images/default_user.jpg";
             }
         }
+    } else {
+        $globals["user_id"] = 0;
+        $globals["first_name"] = "";
+        $globals["last_name"] = "";
+        $globals["email"] = "";
+        $globals["profile_image"] = "images/default_user.jpg";
     }
 
     return $globals;

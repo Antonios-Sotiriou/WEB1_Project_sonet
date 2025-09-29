@@ -4,9 +4,7 @@
 
     $conn = dbconnect();
 
-    if (isset($_SESSION["email"])) {
-        $GLOBALS["active_user"] = fetchCurrentUser($conn);
-    }
+    $GLOBALS["active_user"] = fetchCurrentUser($conn);
 ?>
 
 <!DOCTYPE html>
@@ -50,11 +48,11 @@
                         }
                     ?>
 
-                    <div class="container" id="user-image">
-                        <img src="images/default_user.jpg" alt="" width="30" height="24">
+                    <div class="user-image-container" id="user-image">
+                        <img class="navbar-user-image" src= <?php echo $GLOBALS["active_user"]["profile_image"] ?> alt="" width="30" height="24">
                     </div>
 
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown" id="dropdown-menu-id">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Options
                         </a>
