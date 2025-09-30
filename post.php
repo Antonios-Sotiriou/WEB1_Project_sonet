@@ -8,6 +8,7 @@
         $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
         if(isset($_POST["postCreate"])) {
+            $user_id = $GLOBALS["active_user"]["user_id"];
             $content = $_POST["content"];
             $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
             if ($conn->query($insertQuery) == TRUE) {
