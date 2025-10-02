@@ -101,73 +101,77 @@
 
         <?php foreach($posts as $post) { ?>
 
-            <!-- <div class="single-post-container"> -->
-                <div class="article-main-container">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="post-header" style="display: flex;">
-                                
-                                <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
-                                
-                                <div class="user-post-info">
-                                    <?php echo $post["first_name"].' '.$post["last_name"] ?>
-                                    <div class="text-muted small"><?php echo $post["created"] ?></div>
-                                </div>
+            <div class="article-main-container">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="post-header" style="display: flex;">
+                            
+                            <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
+                            
+                            <div class="user-post-info">
+                                <?php echo $post["first_name"].' '.$post["last_name"] ?>
+                                <div class="text-muted small"><?php echo $post["created"] ?></div>
                             </div>
-                        
-                            <p>
-                                <div style="text"><?php echo $post["content"] ?></div>
-                            </p>
+                        </div>
+                    
+                        <p>
+                            <div style="text"><?php echo $post["content"] ?></div>
+                        </p>
+                    </div>
+
+                    <!-- The infos above the Buttons at the footer of the Post. -->
+                    <div class="post-footer">
+                        <div class="post-footer-info-container">
+                            <div class="post-footer-info">
+                                <?php echo fetchTotalLikes($GLOBALS["conn"], $post["post_id"])." Likes" ?>
+                            </div>
+                            <div class="post-footer-info">
+                                <?php echo fetchTotalComments($GLOBALS["conn"], $post["post_id"])." Comments" ?>
+                            </div>
+                            <div class="post-footer-info">
+                                <?php echo fetchTotalDislikes($GLOBALS["conn"], $post["post_id"])." Dislikes" ?>
+                            </div>
                         </div>
 
-                        <!-- The infos above the Buttons at the footer of the Post. -->
-                        <div class="post-footer">
-                            <div class="post-footer-info-container">
-                                <div class="post-footer-info">
-                                    123 Likes
-                                </div>
-                                <div class="post-footer-info">
-                                    12 Comments
-                                </div>
-                                <div class="post-footer-info">
-                                    32 Dislikes
+                        <!-- The Buttons at the footer of the Post. -->
+                        <div class="post-footer-interactions-container">
+
+                            <div class="post-footer-interactions">
+                                <input type     = "image"
+                                        class   = "post-interactions-image" 
+                                        src     = "images/like.png" 
+                                        id      = "post_".<?php echo $post["post_id"] ?> 
+                                        name    = "like_post" 
+                                        user_id = <?php echo $GLOBALS["active_user"]["user_id"] ?>
+                                        post_id = <?php echo $post["post_id"] ?>
+                                >
+                            </div>
+
+                            <div class="post-footer-interactions">
+                                <div>
+                                    <a href="comment.php?id=<?php echo $post['post_id']; ?>">
+                                        <img src="images/comment.png" class="post-interactions-image" alt="">
+                                    </a>
                                 </div>
                             </div>
 
-                            <!-- The Buttons at the footer of the Post. -->
-                            <div class="post-footer-interactions-container">
-
-                                <div class="post-footer-interactions">
-                                    <form action="" method="post">
-                                        <input type="image" alt="" class="post-interactions-image" src="images/like.png">
-                                    </form>
-                                </div>
-
-                                <div class="post-footer-interactions">
-                                    <div>
-                                        <a href="comment.php?id=<?php echo $post['post_id']; ?>">
-                                            <img src="images/comment.png" class="post-interactions-image" alt="">
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div class="post-footer-interactions">
-                                    <form action="" method="post">
-                                        <input type="image" alt="" class="post-interactions-image" src="images/dislike.png">
-                                    </form>
-                                </div>
-
+                            <div class="post-footer-interactions">
+                                <form action="" method="post">
+                                    <input type="image" alt="" class="post-interactions-image" src="images/dislike.png">
+                                </form>
                             </div>
+
                         </div>
                     </div>
                 </div>
-            <!-- </div> -->
+            </div>
 
         <?php
             }
         ?>
     </div>
 
+    <script type="text/javascript" src="scripts_js/like_dislike.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 </body>

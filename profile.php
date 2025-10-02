@@ -26,6 +26,7 @@
             }
 
             if (!empty($_FILES["uploadPhoto"]["name"])) {
+                // HERE WE MUST CHECK IF USER UPLOADED CORRECT IMAGE TYPE.
                 $folder = 'media/'.$GLOBALS["active_user"]["md_email"].'/';
                 $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
 

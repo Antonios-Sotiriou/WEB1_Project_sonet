@@ -53,6 +53,22 @@ function fetchPosts() {
     return $posts;
 }
 
+function fetchTotalLikes($conn, $post_id) {
+    $query_likes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM likes WHERE likes.post_id = $post_id");
+
+    return mysqli_num_rows($query_likes_total);
+}
+function fetchTotalDislikes($conn, $post_id) {
+    $query_dislikes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM dislikes WHERE dislikes.post_id = $post_id");
+
+    return mysqli_num_rows($query_dislikes_total);
+}
+function fetchTotalComments($conn, $post_id) {
+    $query_comments_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM comments WHERE comments.post_id = $post_id");
+
+    return mysqli_num_rows($query_comments_total);
+}
+
 function allowedImages() {
     $allowed = array (
         "image/pjpeg","image/jpeg", "image/JPG", 
