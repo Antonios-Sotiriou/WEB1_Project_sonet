@@ -9,8 +9,8 @@
 
         if(isset($_POST["postCreate"])) {
             $user_id = $GLOBALS["active_user"]["user_id"];
-            $content = $_POST["content"];
-            $insertQuery = "INSERT INTO posts(user_id, content) VALUES ('$user_id', '$content')";
+            $content = $_POST["post_content"];
+            $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
             if ($conn->query($insertQuery) == TRUE) {
                 echo "$content";
                 header("location: home.php");
@@ -54,7 +54,7 @@
                         <h1 class="form-title">What would you like to publish?</h1>
                         <form method="post" action="post.php">
                             <div class="input-group">
-                                <textarea class="form-control" aria-label="With textarea" name="content"></textarea>
+                                <textarea class="form-control" aria-label="With textarea" name="post_content"></textarea>
                             </div>
 
                             <div>

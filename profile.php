@@ -12,14 +12,14 @@
 
             if (!empty($_POST["firstName"])) {
                 $first_name = $_POST["firstName"];
-                $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE id = $user_id";
+                $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
                 if ($conn->query($insertQuery) == TRUE) {
                     header("Location: profile.php");
                 }
             }
             if (!empty($_POST["lastName"])) {
                 $last_name = $_POST["lastName"];
-                $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE id = '$user_id'";
+                $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
                 if ($conn->query($insertQuery) == TRUE) {
                     header("Location: profile.php");
                 }

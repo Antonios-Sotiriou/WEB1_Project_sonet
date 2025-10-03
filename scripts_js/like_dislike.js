@@ -1,5 +1,14 @@
 'use strict'
 
+const input = document.querySelector(".body-fluid");
+input.addEventListener("click", (event) => {
+    if (event.target.name === "like_post") {
+        userLikePost(event.target.attributes["user_id"].nodeValue, event.target.attributes["post_id"].nodeValue);
+    } else if (event.target.name == "dislike_post") {
+        userDislikePost(event.target.attributes["user_id"].nodeValue, event.target.attributes["post_id"].nodeValue);
+    }
+})
+
 function userLikePost(user_id, post_id) {
     const data = new FormData();
 
@@ -13,16 +22,20 @@ function userLikePost(user_id, post_id) {
     })
     .then( (response) => {
         if (response.ok) {
-            // handleLikeIcon(post_id);
             return response.json();
         } else {
-            throw Error(`Like Post failed with status: ${response.status}`)
+            throw Error(`Like Post failed with status: ${response.status}`);
         }
     })
     .then( (data) => {
         console.log(data);
-        // totalLikes.innerText = data.total_likes + ' Likes'
-        // totalDislikes.innerText = data.total_dislikes + ' Dislikes'
+        const likes_info = document.querySelector("#post_" + data.post_id + "_likes_info");
+        likes_info.innerText = data.total_likes + " Likes";
+
+        const dislikes_info = document.querySelector("#post_" + data.post_id + "_dislikes_info");
+        dislikes_info.innerText = data.total_dislikes + " Dislikes";
+
+        handleLikeImg(data.post_id);
     })
     .then( () => {
         // Push state because otherwise doesn't take effect visually when navigating back and forth
@@ -31,104 +44,65 @@ function userLikePost(user_id, post_id) {
     })
     .catch( (error) => console.log(error))
 }
+const handleLikeImg = (post_id) => {  
+    
+    const like_img = document.querySelector(`#post_${post_id}_like_img`);
+    const dislike_img = document.querySelector(`#post_${post_id}_dislike_img`)
 
-// Like Post functionality #############################################################################
-const postLike = (uuid) => {
+    if (like_img.attributes.src.value === 'images/alreadyliked.png') {
+        like_img.attributes.src.value = 'images/like.png'
 
-    const likeForm = document.querySelector(`#like_${uuid}`)
-    const totalLikes = document.querySelector(`#total_likes_${uuid}`)
-    const totalDislikes = document.querySelector(`#total_dislikes_${uuid}`)
-    const data = new FormData()
-    data.append('csrfmiddlewaretoken', likeForm.firstElementChild.value)
+    } else if (like_img.attributes.src.value === 'images/like.png') {
+        like_img.attributes.src.value = 'images/alreadyliked.png'
+        dislike_img.attributes.src.value = 'images/dislike.png'
+    }
+}
+function userDislikePost(user_id, post_id) {
+    const data = new FormData();
 
-    fetch(`/home/post_like/${uuid}/`, {
+    data.append("user_id", user_id);
+    data.append("post_id", post_id);
+    data.append("dislike_post", post_id);
+
+    fetch(`like_dislike.php/`, {
         method: 'POST',
         body: data
     })
     .then( (response) => {
         if (response.ok) {
-            handleLikeIcon(uuid)
-            return response.json()
+            return response.json();
         } else {
-            throw Error(`Like Post failed with status: ${response.status}`)
+            throw Error(`Like Post failed with status: ${response.status}`);
         }
     })
     .then( (data) => {
-        console.log(data)
-        totalLikes.innerText = data.total_likes + ' Likes'
-        totalDislikes.innerText = data.total_dislikes + ' Dislikes'
+        const likes_info = document.querySelector("#post_" + data.post_id + "_likes_info");
+        likes_info.innerText = data.total_likes + " Likes";
+
+        const dislikes_info = document.querySelector("#post_" + data.post_id + "_dislikes_info");
+        dislikes_info.innerText = data.total_dislikes + " Dislikes";
+
+        handleDislikeImg(data.post_id);
     })
     .then( () => {
         // Push state because otherwise doesn't take effect visually when navigating back and forth
-        const postFeedArea = document.querySelector('.main-side-area')
-        history.replaceState(postFeedArea.innerHTML, '', '')
+        const postFeedBody = document.querySelector('.body-fluid');
+        history.replaceState(postFeedBody.innerHTML, '', '');
     })
     .catch( (error) => console.log(error))
 }
-const handleLikeIcon = (uuid) => {  
+const handleDislikeImg = (post_id) => {  
     
-    const likeForm = document.querySelector(`#like_${uuid}`)
-    const dislikeForm = document.querySelector(`#dislike_${uuid}`)
+    const like_img = document.querySelector(`#post_${post_id}_like_img`);
+    const dislike_img = document.querySelector(`#post_${post_id}_dislike_img`)
 
-        if (likeForm.lastElementChild.attributes.src.value === '/static/post/icons/alreadyliked.png') {
-            likeForm.lastElementChild.attributes.src.value = '/static/post/icons/like.png'
+    if (dislike_img.attributes.src.value === 'images/alreadydisliked.png') {
+        dislike_img.attributes.src.value = 'images/dislike.png'
 
-        } else if (likeForm.lastElementChild.attributes.src.value === '/static/post/icons/like.png') {
-            likeForm.lastElementChild.attributes.src.value = '/static/post/icons/alreadyliked.png'
-            dislikeForm.lastElementChild.attributes.src.value = '/static/post/icons/dislike.png'
-        }
-}
-// Dislike Post functionality #############################################################################
-// const postDislike = (uuid) => {
-
-//     const dislikeForm = document.querySelector(`#dislike_${uuid}`)
-//     const totalDislikes = document.querySelector(`#total_dislikes_${uuid}`)
-//     const totalLikes = document.querySelector(`#total_likes_${uuid}`)
-//     const data = new FormData()
-//     data.append('csrfmiddlewaretoken', dislikeForm.firstElementChild.value)
-
-//     fetch(`/home/post_dislike/${uuid}/`, {
-//         method: 'POST',
-//         body: data
-//     })
-//     .then( (response) => {
-//         if (response.ok) {
-//             handleDislikeIcon(uuid)
-//             return response.json()
-//         } else {
-//             throw Error(`Dislike Post failed with status: ${response.status}`)
-//         }
-//     })
-//     .then( (data) => {
-//         console.log(data)
-//         totalDislikes.innerText = data.total_dislikes + ' Dislikes'
-//         totalLikes.innerText = data.total_likes + ' Likes'
-//     })
-//     .then( () => {
-//         // Push state because otherwise doesn't take effect visually when navigating back and forth
-//         const postFeedArea = document.querySelector('.main-side-area')
-//         history.replaceState(postFeedArea.innerHTML, '', '')
-//     })
-//     .catch( (error) => console.log(error))
-// }
-// const handleDislikeIcon = (uuid) => {  
-    
-//     const dislikeForm = document.querySelector(`#dislike_${uuid}`)
-//     const likeForm = document.querySelector(`#like_${uuid}`)
-
-//         if (dislikeForm.lastElementChild.attributes.src.value === '/static/post/icons/alreadydisliked.png') {
-//             dislikeForm.lastElementChild.attributes.src.value = '/static/post/icons/dislike.png'
-
-//         } else if (dislikeForm.lastElementChild.attributes.src.value === '/static/post/icons/dislike.png') {
-//             dislikeForm.lastElementChild.attributes.src.value = '/static/post/icons/alreadydisliked.png'
-//             likeForm.lastElementChild.attributes.src.value = '/static/post/icons/like.png'
-//         }
-// }
-const input = document.querySelector(".body-fluid");
-input.addEventListener("click", (event) => {
-    console.log(event);
-    
-    if (event.target.name === "like_post") {
-        userLikePost(event.target.attributes["user_id"].nodeValue, event.target.attributes["post_id"].nodeValue);
+    } else if (dislike_img.attributes.src.value === 'images/dislike.png') {
+        dislike_img.attributes.src.value = 'images/alreadydisliked.png'
+        like_img.attributes.src.value = 'images/like.png'
     }
-})
+}
+
+
