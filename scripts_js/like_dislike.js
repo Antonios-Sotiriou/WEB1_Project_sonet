@@ -12,6 +12,10 @@ input.addEventListener("click", (event) => {
 function userLikePost(user_id, post_id) {
     const data = new FormData();
 
+    if (user_id == 0) {
+        return;
+    }
+
     data.append("user_id", user_id);
     data.append("post_id", post_id);
     data.append("like_post", post_id);
@@ -28,7 +32,6 @@ function userLikePost(user_id, post_id) {
         }
     })
     .then( (data) => {
-        console.log(data);
         const likes_info = document.querySelector("#post_" + data.post_id + "_likes_info");
         likes_info.innerText = data.total_likes + " Likes";
 
@@ -59,6 +62,10 @@ const handleLikeImg = (post_id) => {
 }
 function userDislikePost(user_id, post_id) {
     const data = new FormData();
+
+    if (user_id == 0) {
+        return;
+    }
 
     data.append("user_id", user_id);
     data.append("post_id", post_id);

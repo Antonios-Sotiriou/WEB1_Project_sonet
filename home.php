@@ -104,10 +104,17 @@
             <div class="article-main-container">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <div class="post-header" style="display: flex;">
+                        <div class="post-header">
                             
-                            <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
-                            
+                            <img class ="user-post-image"
+                                 src   = <?php 
+                                            if (isset($post["img_name"])) {
+                                                echo "media/".md5($post["email"])."/".$post["img_name"]; 
+                                            } else {
+                                                echo "images/default_user.jpg";  
+                                            }
+                                         ?>
+                            >
                             <div class="user-post-info">
                                 <?php echo $post["first_name"].' '.$post["last_name"] ?>
                                 <div class="text-muted small"><?php echo $post["created_at"] ?></div>
@@ -155,7 +162,7 @@
 
                             <div class="post-footer-interactions">
                                 <div>
-                                    <a href="comment.php">
+                                    <a href="comment.php?id=<?php echo $post['post_id']; ?>"> <!-- Änderung to work with comments -->
                                         <img class  ="post-interactions-image"
                                             src     = <?php 
                                                         if (userInComments($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
@@ -189,7 +196,6 @@
                                         post_id = <?php echo $post["post_id"] ?>  
                                 >
                             </div>
-
                         </div>
                     </div>
                 </div>

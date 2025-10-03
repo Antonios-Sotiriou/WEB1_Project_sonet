@@ -44,7 +44,13 @@ function fetchCurrentUser($conn) {
 
 function fetchPosts() {
     $conn = dbconnect();
-    $query = mysqli_query($conn, "SELECT * FROM posts AS p JOIN users AS u ON p.user_id = u.user_id ORDER BY p.created_at DESC;");
+    $query = mysqli_query($conn,
+        "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
+        FROM posts 
+        JOIN users ON posts.user_id = users.user_id 
+        LEFT JOIN prof_images ON posts.user_id = prof_images.user_id 
+        ORDER BY posts.created_at DESC;"
+    );
 
     while($row = $query->fetch_assoc()) {
         $posts[] = $row;
