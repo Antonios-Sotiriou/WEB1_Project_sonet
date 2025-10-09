@@ -14,11 +14,25 @@ function dbconnect() {
     return $conn;
 }
 
+function isAdmin($conn, $user_id) {
+        $query = mysqli_query($conn, 
+            "SELECT * FROM admins WHERE admins.user_id='$user_id'"
+        );
+
+        return mysqli_num_rows($query);
+}
+
 function fetchCurrentUser($conn) {
 
     if (isset($_SESSION["email"])) {
         $email = $_SESSION["email"];
-        $query = mysqli_query($conn, "SELECT users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name FROM users LEFT JOIN prof_images ON users.user_id = prof_images.user_id WHERE users.email='$email'");
+        $query = mysqli_query($conn, 
+            "SELECT users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
+            FROM users 
+            LEFT JOIN prof_images ON users.user_id = prof_images.user_id 
+            WHERE users.email='$email'"
+        );
+
         while ($row = mysqli_fetch_array($query)) {
             $globals["user_id"] = $row["user_id"];
             $globals["first_name"] = $row["first_name"];
@@ -42,8 +56,7 @@ function fetchCurrentUser($conn) {
     return $globals;
 }
 
-function fetchPosts() {
-    $conn = dbconnect();
+function fetchPosts($conn) {
     $query = mysqli_query($conn,
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
         FROM posts 

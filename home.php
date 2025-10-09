@@ -79,6 +79,7 @@
                                                 <a class='dropdown-item' href='profile.php'>Profile</a>
                                             </li>";
 
+                                        if (isAdmin($conn, $GLOBALS["active_user"]["user_id"]))
                                         echo "<li>
                                                 <a class='dropdown-item' href='admin_panel.php'>Admin Panel</a>
                                             </li>";
@@ -95,7 +96,7 @@
         </div>
     </nav>
 
-    <?php $posts = fetchPosts(); ?>
+    <?php $posts = fetchPosts($conn); ?>
 
     <div class="posts-container">
 

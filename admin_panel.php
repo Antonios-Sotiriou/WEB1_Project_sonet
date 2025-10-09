@@ -1,3 +1,22 @@
+<?php
+    session_start();
+    include("functions.php");
+
+    $conn = dbconnect();
+
+    if (isset($_SESSION["email"])) {
+        $GLOBALS["active_user"] = fetchCurrentUser($conn);
+
+        if (!isAdmin($conn, $GLOBALS["active_user"]["user_id"])) {
+            header("HTTP/1:1 404 Not Found");
+            die();
+        }
+    } else {
+        header("HTTP/1:1 404 Not Found");
+        die();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
