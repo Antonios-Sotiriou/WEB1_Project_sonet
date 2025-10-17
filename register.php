@@ -4,9 +4,9 @@
     $conn = dbconnect();
 
     if (isset($_POST["signUp"])) {
-        $first_name = $_POST["firstName"];
-        $last_name = $_POST["lastName"];
-        $email = $_POST["email"];
+        $first_name = trim($_POST["firstName"]);
+        $last_name = trim($_POST["lastName"]);
+        $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
         $password = $_POST["password"];
         $password = md5($password);
 
@@ -17,7 +17,7 @@
         } else {
             $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
             if ($conn->query($insertQuery) == TRUE) {
-                header("location: login.html");
+                header("location: login.php");
             } else {
                 echo "An error has occured!".$conn->error;
             }
