@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 29. Sep 2025 um 13:02
+-- Erstellungszeit: 21. Okt 2025 um 00:26
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -24,14 +24,50 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `admins`
+--
+
+CREATE TABLE `admins` (
+  `user_id` int(11) NOT NULL,
+  `date_joined` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `admins`
+--
+
+INSERT INTO `admins` (`user_id`, `date_joined`) VALUES
+(1, '2025-10-09 21:37:20');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `comments`
+--
+
+CREATE TABLE `comments` (
+  `post_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `comm_content` varchar(1024) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `dislikes`
 --
 
 CREATE TABLE `dislikes` (
-  `dislike_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `dislikes`
+--
+
+INSERT INTO `dislikes` (`user_id`, `post_id`) VALUES
+(1, 14);
 
 -- --------------------------------------------------------
 
@@ -40,10 +76,27 @@ CREATE TABLE `dislikes` (
 --
 
 CREATE TABLE `likes` (
-  `like_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `likes`
+--
+
+INSERT INTO `likes` (`user_id`, `post_id`) VALUES
+(2, 2),
+(1, 6),
+(1, 7),
+(1, 8),
+(1, 11),
+(1, 12),
+(1, 13),
+(1, 3),
+(1, 5),
+(2, 16),
+(1, 17),
+(4, 17);
 
 -- --------------------------------------------------------
 
@@ -53,16 +106,16 @@ CREATE TABLE `likes` (
 
 CREATE TABLE `posts` (
   `post_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) NOT NULL,
-  `content` varchar(2048) NOT NULL
+  `post_content` varchar(2048) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `posts`
 --
 
-INSERT INTO `posts` (`post_id`, `created`, `user_id`, `content`) VALUES
+INSERT INTO `posts` (`post_id`, `created_at`, `user_id`, `post_content`) VALUES
 (1, '2025-09-25 02:34:43', 1, ''),
 (2, '2025-09-25 02:35:27', 1, ''),
 (3, '2025-09-25 02:45:00', 1, ''),
@@ -70,7 +123,14 @@ INSERT INTO `posts` (`post_id`, `created`, `user_id`, `content`) VALUES
 (5, '2025-09-25 02:48:22', 1, ''),
 (6, '2025-09-25 02:49:10', 1, 'Antonios Sotiriou!'),
 (7, '2025-09-25 20:22:27', 1, 'akcmac cmoamcoka acmokmckoam acmcmao acmacmakc acmakcmkacm acmcmkcm'),
-(8, '2025-09-25 23:32:07', 1, '');
+(8, '2025-09-25 23:32:07', 1, ''),
+(11, '2025-09-30 10:01:46', 1, 'Test Post!'),
+(12, '2025-09-30 10:02:07', 1, 'Another Test Post!'),
+(13, '2025-09-30 14:16:31', 1, 'Hello how are you?'),
+(14, '2025-10-03 07:44:29', 1, 'A new Post for testing.'),
+(15, '2025-10-03 11:58:55', 2, 'Another post from Mario.'),
+(16, '2025-10-03 12:30:59', 2, 'A third Post from Mario.'),
+(17, '2025-10-09 21:19:21', 2, 'A forth post from mario to test.');
 
 -- --------------------------------------------------------
 
@@ -89,7 +149,8 @@ CREATE TABLE `prof_images` (
 --
 
 INSERT INTO `prof_images` (`img_id`, `img_name`, `user_id`) VALUES
-(20, 'stones64x64.bmp', 1);
+(20, 'stones64x64.bmp', 1),
+(23, 'sun.bmp', 4);
 
 -- --------------------------------------------------------
 
@@ -98,7 +159,7 @@ INSERT INTO `prof_images` (`img_id`, `img_name`, `user_id`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -109,19 +170,33 @@ CREATE TABLE `users` (
 -- Daten für Tabelle `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`) VALUES
-(1, 'John', 'Doe', 'johndoe@gmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
-(2, 'Mario', 'Donato', 'mariodonato@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e');
+INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `password`) VALUES
+(1, 'john', 'Doe', 'johndoe@gmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
+(2, 'Mario', 'Donato', 'mariodonato@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
+(3, 'Alice', 'Wonderland', 'alice@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
+(4, 'Robert', 'Dawson', 'robdawson@yahoo.com', 'e10adc3949ba59abbe56e057f20f883e');
 
 --
 -- Indizes der exportierten Tabellen
 --
 
 --
+-- Indizes für die Tabelle `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indizes für die Tabelle `comments`
+--
+ALTER TABLE `comments`
+  ADD KEY `cpkey` (`post_id`),
+  ADD KEY `cukey` (`user_id`);
+
+--
 -- Indizes für die Tabelle `dislikes`
 --
 ALTER TABLE `dislikes`
-  ADD PRIMARY KEY (`dislike_id`),
   ADD KEY `dukey` (`user_id`),
   ADD KEY `lukey` (`post_id`);
 
@@ -129,7 +204,8 @@ ALTER TABLE `dislikes`
 -- Indizes für die Tabelle `likes`
 --
 ALTER TABLE `likes`
-  ADD PRIMARY KEY (`like_id`);
+  ADD KEY `luskey` (`user_id`),
+  ADD KEY `lpokey` (`post_id`);
 
 --
 -- Indizes für die Tabelle `posts`
@@ -149,64 +225,72 @@ ALTER TABLE `prof_images`
 -- Indizes für die Tabelle `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`user_id`);
 
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
 
 --
--- AUTO_INCREMENT für Tabelle `dislikes`
---
-ALTER TABLE `dislikes`
-  MODIFY `dislike_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `likes`
---
-ALTER TABLE `likes`
-  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT für Tabelle `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT für Tabelle `prof_images`
 --
 ALTER TABLE `prof_images`
-  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints der exportierten Tabellen
 --
 
 --
+-- Constraints der Tabelle `admins`
+--
+ALTER TABLE `admins`
+  ADD CONSTRAINT `aukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `cpkey` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints der Tabelle `dislikes`
 --
 ALTER TABLE `dislikes`
-  ADD CONSTRAINT `dukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `dukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `lukey` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `likes`
+--
+ALTER TABLE `likes`
+  ADD CONSTRAINT `lpokey` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `luskey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `posts`
 --
 ALTER TABLE `posts`
-  ADD CONSTRAINT `pukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `prof_images`
 --
 ALTER TABLE `prof_images`
-  ADD CONSTRAINT `iukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `iukey` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
