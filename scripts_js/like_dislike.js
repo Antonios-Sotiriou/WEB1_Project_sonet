@@ -10,19 +10,19 @@ input.addEventListener("click", (event) => {
 })
 
 function userLikePost(user_id, post_id) {
-    const data = new FormData();
+    const info = new FormData();
 
     if (user_id == 0) {
         return;
     }
 
-    data.append("user_id", user_id);
-    data.append("post_id", post_id);
-    data.append("like_post", post_id);
+    info.append("user_id", user_id);
+    info.append("post_id", post_id);
+    info.append("like_post", post_id);
 
     fetch(`like_dislike.php/`, {
         method: 'POST',
-        body: data
+        body: info
     })
     .then( (response) => {
         if (response.ok) {
@@ -61,19 +61,19 @@ const handleLikeImg = (post_id) => {
     }
 }
 function userDislikePost(user_id, post_id) {
-    const data = new FormData();
+    const info = new FormData();
 
     if (user_id == 0) {
         return;
     }
 
-    data.append("user_id", user_id);
-    data.append("post_id", post_id);
-    data.append("dislike_post", post_id);
+    info.append("user_id", user_id);
+    info.append("post_id", post_id);
+    info.append("dislike_post", post_id);
 
     fetch(`like_dislike.php/`, {
         method: 'POST',
-        body: data
+        body: info
     })
     .then( (response) => {
         if (response.ok) {

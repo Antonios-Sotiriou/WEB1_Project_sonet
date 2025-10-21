@@ -141,7 +141,7 @@
                             </div>
                         </div>
 
-                        <!-- The Buttons at the footer of the Post. -->
+                        <!-- The Buttons at the footer of the Post. (like, comment, dislike). -->
                         <div class="post-footer-interactions-container">
 
                             <div class="post-footer-interactions">
