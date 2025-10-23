@@ -3,37 +3,10 @@
 
     $conn = dbconnect();
 
+    $GLOBALS["active_user"] = fetchCurrentUser($conn);
+
     if (isset($_POST["signUp"])) {
-
-        if (ctype_alpha($_POST["firstName"])) {
-
-            $first_name = trim($_POST["firstName"]);
-
-            if (ctype_alpha($_POST["lastName"])) {
-                $last_name = trim($_POST["lastName"]);
-
-                $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
-                $password = $_POST["password"];
-                $password = md5($password);
-
-                $check_email = "SELECT * FROM users WHERE email='$email'";
-                $result = $conn->query($check_email);
-                if ($result->num_rows > 0) {
-                    echo "Email address already exists!";
-                } else {
-                    $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
-                    if ($conn->query($insertQuery) == TRUE) {
-                        header("location: login.php");
-                    } else {
-                        echo "An error has occured!".htmlspecialchars($conn->error);
-                    }
-                }
-            } else {
-                echo "Special Charakters or numbers are not allowed in Last name!";
-            }
-        } else {
-            echo "Special Charakters or numbers are not allowed in First name!";
-        }
+        userRegister($conn, $_POST);
     }
 ?>
 
@@ -44,11 +17,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="css/forms_style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <title>Register</title>
 </head>
 <body>
+
+    <?php include_once("shared/navbar.php"); ?>
+
     <div class="register-container" id="signup">
 
         <div id="register-photo-container">

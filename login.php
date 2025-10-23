@@ -3,21 +3,10 @@
 
     $conn = dbconnect();
 
-    if (isset($_POST["signIn"])) {
-        $email = htmlspecialchars($_POST["email"]);
-        $password = $_POST["password"];
-        $password = md5($password);
+    $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
-        $retrieve_user = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
-        $result = $conn->query($retrieve_user);
-        if ($result->num_rows > 0) {
-            session_start();
-            $row = $result->fetch_assoc();
-            $_SESSION["email"] = $row["email"];
-            header("Location: home.php");
-        } else {
-            echo "User not found! Check your email and password for type mistakes!";
-        }
+    if (isset($_POST["signIn"])) {
+        userLogIn($conn, $_POST);
     }
 ?>
 
@@ -33,6 +22,8 @@
     <title>Login</title>
 </head>
 <body>
+
+    <?php include_once("shared/navbar.php"); ?>
 
     <div class="login-container" id="signIn">
 

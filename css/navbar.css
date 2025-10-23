@@ -1,0 +1,39 @@
+#nav-bar {
+    min-width: 290px;
+}
+
+#nav-app-name {
+    text-align: center;
+    font-size: 50px;
+    margin-left: 5vh;
+}
+
+#user-image {
+    align-items: center;
+    margin-left: 0.5em;
+}
+
+.navbar-user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+#navbarNavDropdown {
+    justify-content: end;
+}
+
+#dropdown-menu-id {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#drop-down-window {
+    left: unset;
+    right: 0%;
+}
+
+.col-md-8 {
+    margin: auto;
+}

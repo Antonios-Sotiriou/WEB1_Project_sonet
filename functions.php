@@ -14,6 +14,117 @@ function dbconnect() {
     return $conn;
 }
 
+function userLogIn($conn, $info) {
+    $email = htmlspecialchars($info["email"]);
+    $password = $info["password"];
+    $password = md5($password);
+
+    $retrieve_user = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
+    $result = $conn->query($retrieve_user);
+    if ($result->num_rows > 0) {
+        session_start();
+        $row = $result->fetch_assoc();
+        $_SESSION["email"] = $row["email"];
+        header("Location: home.php");
+    } else {
+        echo "User not found! Check your email and password for type mistakes!";
+    }
+}
+
+function userRegister($conn, $_post) {
+    if (ctype_alpha($_post["firstName"])) {
+
+        $first_name = trim($_post["firstName"]);
+
+        if (ctype_alpha($_post["lastName"])) {
+            $last_name = trim($_post["lastName"]);
+
+            $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
+            $password = $_post["password"];
+            $password = md5($password);
+
+            $check_email = "SELECT * FROM users WHERE email='$email'";
+            $result = $conn->query($check_email);
+            if ($result->num_rows > 0) {
+                echo "Email address already exists!";
+            } else {
+                $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
+                if ($conn->query($insertQuery) == TRUE) {
+                    header("location: login.php");
+                } else {
+                    echo "An error has occured!".htmlspecialchars($conn->error);
+                }
+            }
+        } else {
+            echo "Special Charakters or numbers are not allowed in Last name!";
+        }
+    } else {
+        echo "Special Charakters or numbers are not allowed in First name!";
+    }
+}
+
+function userUpdate($conn, $_post, $globals) {
+    $user_id = $globals["active_user"]["user_id"];
+
+    if (!empty($_post["firstName"])) {
+        if (ctype_alpha($_post["firstName"])) {
+            $first_name = trim($_post["firstName"]);
+
+            $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
+            if ($conn->query($insertQuery) == TRUE) {
+                header("Location: profile.php");
+            }
+        }
+    }
+    if (!empty($_post["lastName"])) {
+        if (ctype_alpha($_post["lastName"])) {
+            $last_name = trim($_post["lastName"]);
+
+            $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
+            if ($conn->query($insertQuery) == TRUE) {
+                header("Location: profile.php");
+            }
+        }
+    }
+
+    if (!empty($_FILES["uploadPhoto"]["name"])) {
+
+        if (in_array($_FILES["uploadPhoto"]["type"], allowedImages())) {
+
+            $folder = 'media/'.$globals["active_user"]["md_email"].'/';
+            $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
+
+            if (!is_dir($folder)) {
+                mkdir($folder, recursive: true);
+            }
+
+            if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
+                $img_name = $_FILES["uploadPhoto"]["name"];
+
+                $check_entry = "SELECT * FROM prof_images WHERE user_id='$user_id'";
+                $result = $conn->query($check_entry);
+                if ($result->num_rows > 0) {
+                    $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
+                    if ($conn->query($updateQuery) == TRUE) {
+                        header("Location: profile.php");
+                    } else {
+                        echo "<h3>File update failed!!!</h3>";
+                    }
+                } else {
+                    $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
+                    if ($conn->query($insertQuery) == TRUE) {
+                        header("Location: profile.php");
+                    }
+                }
+            } else {
+                echo "<h3>File upload failed!!!</h3>";
+            }
+        } else {
+            echo "<h3>Image format is not allowed. Use either jpg or png!</h3>";
+        }
+    }
+}
+
 function isAdmin($conn, $user_id) {
         $query = mysqli_query($conn, 
             "SELECT * FROM admins WHERE admins.user_id='$user_id'"
@@ -56,6 +167,17 @@ function fetchCurrentUser($conn) {
     return $globals;
 }
 
+function createPost($conn, $_post, $globals) {
+    $user_id = $GLOBALS["active_user"]["user_id"];
+    $content = htmlspecialchars($_POST["post_content"]);
+    $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
+    if ($conn->query($insertQuery) == TRUE) {
+        header("location: home.php");
+    } else {
+        echo "An error has occured!".htmlspecialchars($conn->error);
+    }
+}
+
 function fetchPosts($conn) {
     $query = mysqli_query($conn,
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
@@ -70,6 +192,44 @@ function fetchPosts($conn) {
     }
     
     return $posts;
+}
+
+function handleUserLike($post_id, $user_id) {
+
+    $query_likes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+    if (!mysqli_num_rows($query_likes)) {
+        // User not in likes, add him.
+        $query_likes = mysqli_query($GLOBALS["conn"], "INSERT INTO likes (post_id, user_id) VALUES ('$post_id', '$user_id')");
+
+        // check if user is in dislikes. If yes remove him. A user can't like and dislike a post at the same time.
+        $query_dislikes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+        if (mysqli_num_rows($query_dislikes)) {
+            // User in dislikes. Remove him.
+            $query_dislikes = mysqli_query($GLOBALS["conn"], "DELETE FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+        }
+    } else {
+        // User in likes, remove him.
+        $query_likes = mysqli_query($GLOBALS["conn"], "DELETE FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+    }
+}
+
+function handleUserDislike($post_id, $user_id) {
+
+    $query_dislikes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+    if (!mysqli_num_rows($query_dislikes)) {
+        // User not in dislikes, add him.
+        $query_dislikes = mysqli_query($GLOBALS["conn"], "INSERT INTO dislikes (post_id, user_id) VALUES ('$post_id', '$user_id')");
+
+        // check if user is in likes. If yes remove him. A user can't like and dislike a post at the same time.
+        $query_likes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+        if (mysqli_num_rows($query_likes)) {
+            // User in likes. Remove him.
+            $query_likes = mysqli_query($GLOBALS["conn"], "DELETE FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+        }
+    } else {
+        // User in dislikes, remove him.
+        $query_dislikes = mysqli_query($GLOBALS["conn"], "DELETE FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+    }
 }
 
 function fetchTotalLikes($conn, $post_id) {

@@ -8,14 +8,7 @@
         $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
         if(isset($_POST["postCreate"])) {
-            $user_id = $GLOBALS["active_user"]["user_id"];
-            $content = htmlspecialchars($_POST["post_content"]);
-            $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
-            if ($conn->query($insertQuery) == TRUE) {
-                header("location: home.php");
-            } else {
-                echo "An error has occured!".htmlspecialchars($conn->error);
-            }
+            createPost($conn, $_POST, $GLOBALS);
         }
     }
 ?>
@@ -33,6 +26,9 @@
     <title>Post</title>
 </head>
 <body>
+
+    <?php include_once("shared/navbar.php"); ?>
+
     <div class="post-create-container">
         <div class="article-main-container">
             <div class="card mb-4">
@@ -68,8 +64,6 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 </body>
 </html>
