@@ -11,49 +11,60 @@
             $user_id = $GLOBALS["active_user"]["user_id"];
 
             if (!empty($_POST["firstName"])) {
-                $first_name = $_POST["firstName"];
-                $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
-                if ($conn->query($insertQuery) == TRUE) {
-                    header("Location: profile.php");
+                if (ctype_alpha($_POST["firstName"])) {
+                    $first_name = trim($_POST["firstName"]);
+
+                    $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
+                    if ($conn->query($insertQuery) == TRUE) {
+                        header("Location: profile.php");
+                    }
                 }
             }
             if (!empty($_POST["lastName"])) {
-                $last_name = $_POST["lastName"];
-                $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
-                if ($conn->query($insertQuery) == TRUE) {
-                    header("Location: profile.php");
+                if (ctype_alpha($_POST["lastName"])) {
+                    $last_name = trim($_POST["lastName"]);
+
+                    $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
+                    if ($conn->query($insertQuery) == TRUE) {
+                        header("Location: profile.php");
+                    }
                 }
             }
 
             if (!empty($_FILES["uploadPhoto"]["name"])) {
-                // HERE WE MUST CHECK IF USER UPLOADED CORRECT IMAGE TYPE.
-                $folder = 'media/'.$GLOBALS["active_user"]["md_email"].'/';
-                $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
 
-                if (!is_dir($folder)) {
-                    mkdir($folder, recursive: true);
-                }
+                if (in_array($_FILES["uploadPhoto"]["type"], allowedImages())) {
 
-                if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
-                    $img_name = $_FILES["uploadPhoto"]["name"];
+                    $folder = 'media/'.$GLOBALS["active_user"]["md_email"].'/';
+                    $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
 
-                    $check_entry = "SELECT * FROM prof_images WHERE user_id='$user_id'";
-                    $result = $conn->query($check_entry);
-                    if ($result->num_rows > 0) {
-                        $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
-                        if ($conn->query($updateQuery) == TRUE) {
-                            header("Location: profile.php");
+                    if (!is_dir($folder)) {
+                        mkdir($folder, recursive: true);
+                    }
+
+                    if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
+                        $img_name = $_FILES["uploadPhoto"]["name"];
+
+                        $check_entry = "SELECT * FROM prof_images WHERE user_id='$user_id'";
+                        $result = $conn->query($check_entry);
+                        if ($result->num_rows > 0) {
+                            $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
+                            if ($conn->query($updateQuery) == TRUE) {
+                                header("Location: profile.php");
+                            } else {
+                                echo "<h3>File update failed!!!</h3>";
+                            }
                         } else {
-                            echo "<h3>File update failed!!!</h3>";
+                            $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
+                            if ($conn->query($insertQuery) == TRUE) {
+                                header("Location: profile.php");
+                            }
                         }
                     } else {
-                        $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
-                        if ($conn->query($insertQuery) == TRUE) {
-                            header("Location: profile.php");
-                        }
+                        echo "<h3>File upload failed!!!</h3>";
                     }
                 } else {
-                    echo "<h3>File upload failed!!!</h3>";
+                    echo "<h3>Image format is not allowed. Use either jpg or png!</h3>";
                 }
             }
         }

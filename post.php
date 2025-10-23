@@ -9,13 +9,12 @@
 
         if(isset($_POST["postCreate"])) {
             $user_id = $GLOBALS["active_user"]["user_id"];
-            $content = $_POST["post_content"];
+            $content = htmlspecialchars($_POST["post_content"]);
             $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
             if ($conn->query($insertQuery) == TRUE) {
-                echo "$content";
                 header("location: home.php");
             } else {
-                echo "An error has occured!".$conn->error;
+                echo "An error has occured!".htmlspecialchars($conn->error);
             }
         }
     }

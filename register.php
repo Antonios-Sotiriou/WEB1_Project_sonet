@@ -4,23 +4,35 @@
     $conn = dbconnect();
 
     if (isset($_POST["signUp"])) {
-        $first_name = trim($_POST["firstName"]);
-        $last_name = trim($_POST["lastName"]);
-        $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
-        $password = $_POST["password"];
-        $password = md5($password);
 
-        $check_email = "SELECT * FROM users WHERE email='$email'";
-        $result = $conn->query($check_email);
-        if ($result->num_rows > 0) {
-            echo "Email address already exists!";
-        } else {
-            $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
-            if ($conn->query($insertQuery) == TRUE) {
-                header("location: login.php");
+        if (ctype_alpha($_POST["firstName"])) {
+
+            $first_name = trim($_POST["firstName"]);
+
+            if (ctype_alpha($_POST["lastName"])) {
+                $last_name = trim($_POST["lastName"]);
+
+                $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
+                $password = $_POST["password"];
+                $password = md5($password);
+
+                $check_email = "SELECT * FROM users WHERE email='$email'";
+                $result = $conn->query($check_email);
+                if ($result->num_rows > 0) {
+                    echo "Email address already exists!";
+                } else {
+                    $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
+                    if ($conn->query($insertQuery) == TRUE) {
+                        header("location: login.php");
+                    } else {
+                        echo "An error has occured!".htmlspecialchars($conn->error);
+                    }
+                }
             } else {
-                echo "An error has occured!".$conn->error;
+                echo "Special Charakters or numbers are not allowed in Last name!";
             }
+        } else {
+            echo "Special Charakters or numbers are not allowed in First name!";
         }
     }
 ?>
@@ -44,7 +56,7 @@
         </div>
 
         <h1 class="form-title">Register</h1>
-        <form action="register.php" method="post">
+        <form action="" method="post">
             <div class="input-group">
                 <input type="text" name="firstName" id="first-name" placeholder="First Name" required>
                 <label for="first-name">First Name</label>

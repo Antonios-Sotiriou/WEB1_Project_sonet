@@ -107,7 +107,7 @@ function allowedImages() {
     $allowed = array (
         "image/pjpeg","image/jpeg", "image/JPG", 
         "image/X-PNG", "image/PNG", "image/png","image/x-png",
-        "image/bmp", "image/BMP"
+        // "image/bmp", "image/BMP"
     );
     
     return $allowed;

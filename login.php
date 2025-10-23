@@ -4,7 +4,7 @@
     $conn = dbconnect();
 
     if (isset($_POST["signIn"])) {
-        $email = $_POST["email"];
+        $email = htmlspecialchars($_POST["email"]);
         $password = $_POST["password"];
         $password = md5($password);
 
@@ -16,7 +16,7 @@
             $_SESSION["email"] = $row["email"];
             header("Location: home.php");
         } else {
-            echo "User not found! Check your username and password for type mistakes!";
+            echo "User not found! Check your email and password for type mistakes!";
         }
     }
 ?>
