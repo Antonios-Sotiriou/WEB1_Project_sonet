@@ -145,12 +145,18 @@ input:focus~label,input:not(:placeholder-shown)~label {
     font-weight:bold;
 }
 
+.links-already-text {
+    margin-bottom: 0;
+}
+
 .sign-actions {
     color:rgb(125,125,235);
     border:none;
     background-color:transparent;
     font-size:1rem;
     font-weight:bold;
+    margin-bottom: 1rem;
+    text-decoration: none;
 }
 
 .sign-actions:hover {

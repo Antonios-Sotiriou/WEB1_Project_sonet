@@ -57,13 +57,16 @@
                                         </li>";
 
                                     echo "<li>
-                                            <a class='dropdown-item' href='profile.php'>Profile</a>
+                                            <a class='dropdown-item' 
+                                               href=profile.php?firstName=".$GLOBALS["active_user"]["first_name"]."&lastName=".$GLOBALS["active_user"]["last_name"].">Profile
+                                            </a>
                                         </li>";
 
-                                    if (isAdmin($conn, $GLOBALS["active_user"]["user_id"]))
-                                    echo "<li>
-                                            <a class='dropdown-item' href='admin_panel.php'>Admin Panel</a>
-                                        </li>";
+                                    if (isAdmin($conn, $GLOBALS["active_user"]["user_id"])) {
+                                        echo "<li>
+                                                <a class='dropdown-item' href='admin_panel.php'>Admin Panel</a>
+                                            </li>";
+                                    }
                                     
                                     echo "<li>
                                             <a class='dropdown-item' href='logout.php'>Logout</a>

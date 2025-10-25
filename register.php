@@ -10,16 +10,8 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php displayHeader("register", "css/forms_style.css"); ?>
 
-    <link rel="stylesheet" href="css/forms_style.css">
-
-    <title>Register</title>
-</head>
 <body>
 
     <?php include_once("shared/navbar.php"); ?>
@@ -31,32 +23,32 @@
         </div>
 
         <h1 class="form-title">Register</h1>
-        <form action="" method="post">
+        <form action="register.php" method="post">
             <div class="input-group">
-                <input type="text" name="firstName" id="first-name" placeholder="First Name" required>
+                <input type="text" name="firstName" id="first-name" placeholder="First Name" value=<?php echo $_POST["firstName"] ?? ""; ?>>
                 <label for="first-name">First Name</label>
             </div>
             <div class="input-group">
-                <input type="text" name="lastName" id="last-name" placeholder="Last Name" required>
+                <input type="text" name="lastName" id="last-name" placeholder="Last Name" value=<?php echo $_POST["lastName"] ?? ""; ?>>
                 <label for="last-name">Last Name</label>
             </div>
             <div class="input-group">
-                <input type="email" name="email" id="email" placeholder="Email" required>
+                <input type="email" name="email" id="email" placeholder="Email" value=<?php echo $_POST["email"] ?? ""; ?>>
                 <label for="email">Email</label>
             </div>
             <div class="input-group">
                 <input type="password" name="password", id="password" placeholder="Password" required>
                 <label for="password">Password</label>
             </div>
-            <input type="submit" class="btn-submit" value="Sign Up" name="signUp">
+            <input type="submit" class="btn-submit" value="signUp" name="signUp">
         </form>
 
         <p class="or">
             ---------- or ----------
         </p>
 
-        <div class="links">
-            <p>Already have an Account?</p><br>
+        <div class="row text-center links">
+            <p class="links-already-text">Already have an Account?</p>
             <a href="login.php" class="sign-actions" id="Sign-in-link">Sign In</a>
         </div>
 
@@ -65,4 +57,3 @@
         </div>
     </div>
 </body>
-</html>

@@ -10,18 +10,9 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="css/forms_style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
-    <title>Login</title>
-</head>
-<body>
+<?php
+    displayHeader("profile", "css/forms_style.css");
+?>
 
     <?php include_once("shared/navbar.php"); ?>
 
@@ -34,7 +25,7 @@
         <h1 class="form-title">Sign In</h1>
         <form method="post" action="login.php">
             <div class="input-group">
-                <input type="email" name="email" id="email" placeholder="Email" required>
+                <input type="email" name="email" id="email" placeholder="Email" value=<?php echo $_POST["email"] ?? ""; ?>>
                 <label for="email">Email</label>
             </div>
             <div class="input-group">
@@ -49,8 +40,8 @@
         ----------or--------
         </p>
 
-        <div class="links">
-            <p>Don't have account yet?</p>
+        <div class="row text-center links">
+            <p class="links-already-text">Don't have account yet?</p>
             <a href="register.php" class="sign-actions" id="sign-up-link">Sign Up</button>
         </div>
 
@@ -60,4 +51,3 @@
     </div>
     
 </body>
-</html>

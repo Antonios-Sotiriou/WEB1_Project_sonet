@@ -43,6 +43,10 @@ body {
     margin: 0.5vh;
 }
 
+.post-user-profile-link {
+    text-decoration: none;
+}
+
 .user-post-info {
     margin-left: 0.5vh;
 }

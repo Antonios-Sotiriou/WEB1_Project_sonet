@@ -7,16 +7,8 @@
     $GLOBALS["active_user"] = fetchCurrentUser($conn);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php displayHeader("home", "css/home_style.css"); ?>
 
-    <link rel="stylesheet" href="css/home_style.css">
-
-    <title>Home</title>
-</head>
 <body class="body-fluid">
 
     <?php include_once("shared/navbar.php"); ?>
@@ -42,7 +34,12 @@
                                          ?>
                             >
                             <div class="user-post-info">
-                                <?php echo $post["first_name"].' '.$post["last_name"] ?>
+                                <a class="post-user-profile-link"
+                                    href=<?php 
+                                        echo "profile.php?firstName=".$post["first_name"].'&lastName='.$post["last_name"]; 
+                                    ?> >
+                                    <?php echo $post["first_name"].' '.$post["last_name"]; ?>
+                                </a>
                                 <div class="text-muted small"><?php echo $post["created_at"] ?></div>
                             </div>
                         </div>

@@ -32,34 +32,43 @@ function userLogIn($conn, $info) {
 }
 
 function userRegister($conn, $_post) {
-    if (ctype_alpha($_post["firstName"])) {
+    $first_name = trim($_post["firstName"]);
+    if ($first_name === '') {
+        echo "First name is empty";
+        return;
+    } else {
+        if (ctype_alpha($first_name)) {
 
-        $first_name = trim($_post["firstName"]);
-
-        if (ctype_alpha($_post["lastName"])) {
             $last_name = trim($_post["lastName"]);
-
-            $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
-            $password = $_post["password"];
-            $password = md5($password);
-
-            $check_email = "SELECT * FROM users WHERE email='$email'";
-            $result = $conn->query($check_email);
-            if ($result->num_rows > 0) {
-                echo "Email address already exists!";
+            if ($last_name === '') {
+                echo "Last name is empty";
+                return;
             } else {
-                $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
-                if ($conn->query($insertQuery) == TRUE) {
-                    header("location: login.php");
+                if (ctype_alpha($last_name)) {
+
+                    $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
+                    $password = $_post["password"];
+                    $password = md5($password);
+
+                    $check_email = "SELECT * FROM users WHERE email='$email'";
+                    $result = $conn->query($check_email);
+                    if ($result->num_rows > 0) {
+                        echo "Email address already exists!";
+                    } else {
+                        $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
+                        if ($conn->query($insertQuery) == TRUE) {
+                            header("location: login.php");
+                        } else {
+                            echo "An error has occured!".htmlspecialchars($conn->error);
+                        }
+                    }
                 } else {
-                    echo "An error has occured!".htmlspecialchars($conn->error);
+                    echo "Special Charakters, spaces or numbers are not allowed in Last name!";
                 }
             }
         } else {
-            echo "Special Charakters or numbers are not allowed in Last name!";
+            echo "Special Charakters, spaces or numbers are not allowed in First name!";
         }
-    } else {
-        echo "Special Charakters or numbers are not allowed in First name!";
     }
 }
 
@@ -273,32 +282,52 @@ function allowedImages() {
     return $allowed;
 }
 
-// Helper Functions ######################################################
+// Funtions which help us avoiding repeating our self. ######################################################
+function displayHeader($page_title, $style_css) {
+    echo "
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
+            <link rel='stylesheet' href='$style_css'>
+
+            <title>$page_title</title>
+        </head>
+        </html>
+    ";
+}
+
+// Display update profile form ######################################################
+function updateProfileForm($globals) {
+    echo '<form method="post" action="profile.php" enctype="multipart/form-data">
+
+        <div class="input-group">
+            <input type="text" name="firstName" id="first-name" placeholder="First Name">
+            <label for="first-name"><?php echo $globals["active_user"]["first_name"] ?></label>
+        </div>
+        <div class="input-group">
+            <input type="text" name="lastName" id="last-name" placeholder="Last Name">
+            <label for="last-name"><?php echo $globals["active_user"]["last_name"] ?></label>
+        </div>
+
+        <div>
+            <div>
+                <small class="custom-file-label" for="inputGroupFile">Upload a profile photo</small>
+            </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile" name="uploadPhoto">
+            </div>
+        </div>
+
+        <input type="submit" class="btn-submit" value="Update" name="profileUpdate">
+    </form>';
+}
+
+// Helper Functions ######################################################
 function enableDebugging() {
     error_reporting(E_ALL);
     ini_set('display_errors', 'On');
-}
-
-function print_FILES_Keysvals() {
-    foreach (array_keys($_FILES) as $key) {
-        echo $key.' {<br>';
-        foreach(array_keys($_FILES[$key]) as $inner_key) {
-            echo $inner_key."  :  ".$_FILES[$key][$inner_key]."<br>";
-        }
-        echo "}";
-    }
-}
-function print_GLOBALS_Keysvals() {
-    foreach (array_keys($GLOBALS) as $key) {
-        echo $key.' {<br>';
-
-        foreach(array_keys($GLOBALS[$key]) as $inner_key) {
-            if (!empty($inner_key)) {
-                echo $inner_key."  :  ".$GLOBALS[$key][$inner_key]."<br>";
-            }
-        }
-        echo "}";
-    }
 }
 ?>
