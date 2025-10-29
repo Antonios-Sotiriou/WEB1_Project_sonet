@@ -36,7 +36,7 @@
                             <div class="user-post-info">
                                 <a class="post-user-profile-link"
                                     href=<?php 
-                                        echo "profile.php?firstName=".$post["first_name"].'&lastName='.$post["last_name"]; 
+                                        echo "profile.php?firstName=".$post["first_name"].'&lastName='.$post["last_name"].'&user_id='.$post["user_id"]; 
                                     ?> >
                                     <?php echo $post["first_name"].' '.$post["last_name"]; ?>
                                 </a>

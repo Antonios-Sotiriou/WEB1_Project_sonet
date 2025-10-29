@@ -13,7 +13,6 @@ body {
 .login-container {
     background:#fff;
     max-width:450px;
-    min-width: 300px;
     padding:1.5rem;
     margin:50px auto;
     border-radius:10px;
@@ -23,7 +22,6 @@ body {
 .register-container {
     background:#fff;
     max-width:450px;
-    min-width: 300px;
     padding:1.5rem;
     margin:50px auto;
     border-radius:10px;

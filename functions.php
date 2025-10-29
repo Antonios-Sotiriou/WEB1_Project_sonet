@@ -72,8 +72,8 @@ function userRegister($conn, $_post) {
     }
 }
 
-function userUpdate($conn, $_post, $globals) {
-    $user_id = $globals["active_user"]["user_id"];
+function userUpdate($conn, $_post, $user) {
+    $user_id = $user["user_id"];
 
     if (!empty($_post["firstName"])) {
         if (ctype_alpha($_post["firstName"])) {
@@ -81,7 +81,7 @@ function userUpdate($conn, $_post, $globals) {
 
             $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
             if ($conn->query($insertQuery) == TRUE) {
-                header("Location: profile.php");
+                header('Location: profile.php?firstName='.$first_name.'&lastName='.$user["last_name"].'&user_id='.$user_id);
             }
         }
     }
@@ -91,7 +91,7 @@ function userUpdate($conn, $_post, $globals) {
 
             $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
             if ($conn->query($insertQuery) == TRUE) {
-                header("Location: profile.php");
+                header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
             }
         }
     }
@@ -100,7 +100,7 @@ function userUpdate($conn, $_post, $globals) {
 
         if (in_array($_FILES["uploadPhoto"]["type"], allowedImages())) {
 
-            $folder = 'media/'.$globals["active_user"]["md_email"].'/';
+            $folder = 'media/'.$user["md_email"].'/';
             $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
 
             if (!is_dir($folder)) {
@@ -110,19 +110,19 @@ function userUpdate($conn, $_post, $globals) {
             if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
                 $img_name = $_FILES["uploadPhoto"]["name"];
 
-                $check_entry = "SELECT * FROM prof_images WHERE user_id='$user_id'";
+                $check_entry = "SELECT * FROM prof_images WHERE user_id = '$user_id'";
                 $result = $conn->query($check_entry);
                 if ($result->num_rows > 0) {
                     $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
                     if ($conn->query($updateQuery) == TRUE) {
-                        header("Location: profile.php");
+                        header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user_id);
                     } else {
                         echo "<h3>File update failed!!!</h3>";
                     }
                 } else {
                     $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
                     if ($conn->query($insertQuery) == TRUE) {
-                        header("Location: profile.php");
+                        header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user_id);
                     }
                 }
             } else {
@@ -174,6 +174,56 @@ function fetchCurrentUser($conn) {
     }
 
     return $globals;
+}
+
+function fetchUserProfilePhoto($conn, $user_id) {
+    $query = mysqli_query($conn, 
+        "SELECT users.email, prof_images.img_name FROM users LEFT JOIN prof_images ON prof_images.user_id = users.user_id WHERE users.user_id = '$user_id'"
+    );
+
+    if (mysqli_num_rows($query)) {
+        while ($row = mysqli_fetch_array($query)) {
+            $email = $row["email"];
+            if (empty($row["img_name"])) {
+                return "images/default_user.jpg";
+            }
+            $img_name = $row["img_name"];
+        }
+    } else {
+        return "";
+    }
+
+    return "media/".md5($email)."/".$img_name;
+}
+
+function fetchUserTotalPosts($conn, $user_id) : int {
+    $query = mysqli_query($conn,
+        "SELECT * FROM posts WHERE posts.user_id = $user_id"
+    );
+
+    if (mysqli_num_rows($query)) {
+        return mysqli_num_rows($query);
+    }
+
+    return 0;
+}
+
+function fetchUserInfo($conn, $user_id) {
+    $query = mysqli_query($conn,
+        "SELECT first_name, last_name, date_joined FROM users WHERE users.user_id = $user_id"
+    );
+
+    if (mysqli_num_rows($query)) {
+        while ($row = mysqli_fetch_array($query)) {
+            $user_info["first_name"] = $row["first_name"];
+            $user_info["last_name"] = $row["last_name"];
+            $user_info["date_joined"] = $row["date_joined"];
+        }
+    } else {
+        return "User not found.";
+    }
+
+    return $user_info;
 }
 
 function createPost($conn, $_post, $globals) {
@@ -305,11 +355,11 @@ function updateProfileForm($globals) {
 
         <div class="input-group">
             <input type="text" name="firstName" id="first-name" placeholder="First Name">
-            <label for="first-name"><?php echo $globals["active_user"]["first_name"] ?></label>
+            <label for="first-name">'.$globals["active_user"]["first_name"].'</label>
         </div>
         <div class="input-group">
             <input type="text" name="lastName" id="last-name" placeholder="Last Name">
-            <label for="last-name"><?php echo $globals["active_user"]["last_name"] ?></label>
+            <label for="last-name">'.$globals["active_user"]["last_name"].'</label>
         </div>
 
         <div>
@@ -322,7 +372,45 @@ function updateProfileForm($globals) {
         </div>
 
         <input type="submit" class="btn-submit" value="Update" name="profileUpdate">
-    </form>';
+    </form>
+
+    <p class="or">
+    ---------- or ----------
+    </p>
+
+    <div class="profile-cancel-btn text-center">
+        <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Cancel</a>
+    </div>';
+}
+
+function infoProfileForm($user_info, $total_posts) {
+    echo '<div class="container-fluid row text-center m-1">
+        <div class="col col-12 col-md-6">First name</div>
+        <div class="col col-12 col-md-6 linear-bg">'.$user_info["first_name"].'</div>
+    </div>
+
+    <div class="container-fluid row text-center m-1">
+        <div class="col col-12 col-md-6">Last name</div>
+        <div class="col col-12 col-md-6 linear-bg">'.$user_info["last_name"].'</div>
+    </div>
+
+    <div class="container-fluid row text-center m-1">
+        <div class="col col-12 col-md-6">Date joined</div>
+        <div class="col col-12 col-md-6 linear-bg">'.date("d.m.Y", strtotime($user_info["date_joined"])).'</div>
+    </div>
+
+    <div class="container-fluid row text-center m-1">
+        <div class="col col-12 col-md-6">Total Posts</div>
+        <div class="col col-12 col-md-6 linear-bg">'.$total_posts.'</div>
+    </div>
+
+    <p class="or">
+    ------------------------
+    </p>
+
+    <div class="profile-cancel-btn text-center">
+        <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Home</a>
+    </div>';
 }
 
 // Helper Functions ######################################################

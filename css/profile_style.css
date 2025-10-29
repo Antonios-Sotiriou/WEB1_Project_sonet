@@ -1,6 +1,9 @@
+.linear-bg {
+    background: linear-gradient(to right, #c9d6ff, #e2e2e2);
+}
+
 #profile-update-container {
     max-width: 400px;
-    min-width: 375px;
     background-color: rgb(255, 255, 255);
     padding: 1vh;
     margin-top: 10vh;

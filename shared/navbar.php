@@ -58,7 +58,7 @@
 
                                     echo "<li>
                                             <a class='dropdown-item' 
-                                               href=profile.php?firstName=".$GLOBALS["active_user"]["first_name"]."&lastName=".$GLOBALS["active_user"]["last_name"].">Profile
+                                               href=profile.php?firstName=".$GLOBALS["active_user"]["first_name"]."&lastName=".$GLOBALS["active_user"]["last_name"]."&user_id=".$GLOBALS["active_user"]["user_id"].">Profile
                                             </a>
                                         </li>";
 

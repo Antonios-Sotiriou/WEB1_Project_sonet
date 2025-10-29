@@ -37,7 +37,7 @@
         </form>
 
         <p class="or">
-        ----------or--------
+            ---------- or ----------
         </p>
 
         <div class="row text-center links">

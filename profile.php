@@ -8,7 +8,7 @@
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (isset($_POST["profileUpdate"])) {
-            userUpdate($conn, $_POST, $GLOBALS);
+            userUpdate($conn, $_POST, $GLOBALS["active_user"]);
         }
     }
 ?>
@@ -26,12 +26,20 @@
 
         <div class="profile-photo-container">
             <?php
-                if (isset($_SESSION["email"])) {
-            ?>
-                    <img class="profile-photo" src=<?php echo $GLOBALS["active_user"]["profile_image"] ?> alt="">
-            <?php
-                } else {
-                    echo '<img class="profile-photo" src="images/default_user.jpg" alt="">';
+                if ($_SERVER["REQUEST_METHOD"] === "GET") {
+                    if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
+                        echo '<img class="profile-photo" src='.$GLOBALS["active_user"]["profile_image"].' alt="">';
+                    } else {
+                        $profile_image = fetchUserProfilePhoto($conn, $_GET["user_id"]);
+                        if (empty($profile_image)) {
+                            // Log a threat at this point with timestamp, active user credentials and all other usefull informations.
+                            echo "User does not exist. Possible threat detection! Reporting...";
+                            die();
+                        }
+                        echo '<img class="profile-photo" src='.$profile_image.' alt="">';
+                    }
+                } else if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                    echo '<img class="profile-photo" src='.$GLOBALS["active_user"]["profile_image"].' alt="">';
                 }
             ?>
         </div>
@@ -39,20 +47,16 @@
         <h1 class="form-title">Profile</h1>
         <?php
             if ($_SERVER["REQUEST_METHOD"] === "GET") {
-                if (($_GET["firstName"] === $GLOBALS["active_user"]["first_name"]) && ($_GET["lastName"] === $GLOBALS["active_user"]["last_name"])) {
+                if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
                     updateProfileForm($GLOBALS);
                 } else {
-                    echo "Displaying User Profile";
+                    $user_info = fetchUserInfo($conn, $_GET["user_id"]);
+                    $total_posts = fetchUserTotalPosts($conn, $_GET["user_id"]);
+                    infoProfileForm($user_info, $total_posts);
                 }
+            } else if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                updateProfileForm($GLOBALS);
             }
         ?>
-
-        <p class="or">
-        ---------- or ----------
-        </p>
-
-        <div class="profile-cancel-btn text-center">
-            <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Cancel</a>
-        </div>
     </div>
 </body>
