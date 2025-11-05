@@ -40,7 +40,7 @@
                                     ?> >
                                     <?php echo $post["first_name"].' '.$post["last_name"]; ?>
                                 </a>
-                                <div class="text-muted small"><?php echo $post["created_at"] ?></div>
+                                <div class="text-muted small"><?php echo date("d.m.Y, H:i", strtotime($post["created_at"])) ?></div>
                             </div>
                         </div>
                     

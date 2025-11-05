@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 21. Okt 2025 um 00:26
+-- Erstellungszeit: 29. Okt 2025 um 14:44
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -48,6 +48,7 @@ INSERT INTO `admins` (`user_id`, `date_joined`) VALUES
 CREATE TABLE `comments` (
   `post_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `comm_content` varchar(1024) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -67,7 +68,8 @@ CREATE TABLE `dislikes` (
 --
 
 INSERT INTO `dislikes` (`user_id`, `post_id`) VALUES
-(1, 14);
+(1, 17),
+(2, 16);
 
 -- --------------------------------------------------------
 
@@ -94,9 +96,11 @@ INSERT INTO `likes` (`user_id`, `post_id`) VALUES
 (1, 13),
 (1, 3),
 (1, 5),
-(2, 16),
-(1, 17),
-(4, 17);
+(4, 17),
+(1, 16),
+(1, 14),
+(2, 17),
+(1, 20);
 
 -- --------------------------------------------------------
 
@@ -130,7 +134,10 @@ INSERT INTO `posts` (`post_id`, `created_at`, `user_id`, `post_content`) VALUES
 (14, '2025-10-03 07:44:29', 1, 'A new Post for testing.'),
 (15, '2025-10-03 11:58:55', 2, 'Another post from Mario.'),
 (16, '2025-10-03 12:30:59', 2, 'A third Post from Mario.'),
-(17, '2025-10-09 21:19:21', 2, 'A forth post from mario to test.');
+(17, '2025-10-09 21:19:21', 2, 'A forth post from mario to test.'),
+(18, '2025-10-23 21:20:43', 2, '&lt;script&gt;Hello&lt;/script&gt;'),
+(19, '2025-10-23 21:22:14', 2, '&lt;script&gt;alert(&#039;Hacked!&#039;);&lt;/script&gt;'),
+(20, '2025-10-23 22:54:20', 1, 'test Post!');
 
 -- --------------------------------------------------------
 
@@ -163,6 +170,7 @@ CREATE TABLE `users` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `date_joined` date NOT NULL DEFAULT current_timestamp(),
   `password` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -170,11 +178,14 @@ CREATE TABLE `users` (
 -- Daten für Tabelle `users`
 --
 
-INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `password`) VALUES
-(1, 'john', 'Doe', 'johndoe@gmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
-(2, 'Mario', 'Donato', 'mariodonato@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
-(3, 'Alice', 'Wonderland', 'alice@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e'),
-(4, 'Robert', 'Dawson', 'robdawson@yahoo.com', 'e10adc3949ba59abbe56e057f20f883e');
+INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `date_joined`, `password`) VALUES
+(1, 'John', 'Doe', 'johndoe@gmail.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e'),
+(2, 'Mario', 'Donato', 'mariodonato@hotmail.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e'),
+(3, 'Alice', 'Wonderland', 'alice@hotmail.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e'),
+(4, 'Robert', 'Dawson', 'robdawson@yahoo.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e'),
+(6, '&lt;script&gt;echo&quot;Hacked&quot;&lt;script&gt;', 'test', 'test@gmail.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e'),
+(7, 'test', 'ta', '', '2025-10-29', 'd41d8cd98f00b204e9800998ecf8427e'),
+(8, 'Donald', 'Trump', 'don.trump@gmail.com', '2025-10-29', 'e10adc3949ba59abbe56e057f20f883e');
 
 --
 -- Indizes der exportierten Tabellen
@@ -235,7 +246,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT für Tabelle `prof_images`
@@ -247,7 +258,7 @@ ALTER TABLE `prof_images`
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints der exportierten Tabellen
