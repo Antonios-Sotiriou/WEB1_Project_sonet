@@ -41,6 +41,7 @@ body {
     height: 50px;
     border-radius: 50%;
     margin: 0.5vh;
+    object-fit: cover;
 }
 
 .post-user-profile-link {

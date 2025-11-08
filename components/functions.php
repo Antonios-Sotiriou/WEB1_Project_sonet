@@ -110,6 +110,8 @@ function userUpdate($conn, $_post, $user) {
             if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
                 $img_name = $_FILES["uploadPhoto"]["name"];
 
+                echo $img_name;
+
                 $check_entry = "SELECT * FROM prof_images WHERE user_id = '$user_id'";
                 $result = $conn->query($check_entry);
                 if ($result->num_rows > 0) {

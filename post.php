@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include("functions.php");
+    include("components/functions.php");
 
     $conn = dbconnect();
 
@@ -20,7 +20,7 @@
 
 <body>
 
-    <?php include_once("shared/navbar.php"); ?>
+    <?php include_once("components/navbar.php"); ?>
 
     <div class="post-create-container">
         <div class="article-main-container">
@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="post-header">
                         
-                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="user-post-image" alt="" id="user-post-image">
+                        <img src= <?= fetchUserProfilePhoto($conn, $GLOBALS["active_user"]["user_id"]); ?> class="user-post-image" alt="" id="user-post-image">
                         
                         <div class="user-post-info">
                             <?php

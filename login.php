@@ -1,5 +1,5 @@
 <?php
-    include("functions.php");
+    include("components/functions.php");
 
     $conn = dbconnect();
 
@@ -14,7 +14,7 @@
     displayHeader("profile", "css/forms_style.css");
 ?>
 
-    <?php include_once("shared/navbar.php"); ?>
+    <?php include_once("components/navbar.php"); ?>
 
     <div class="login-container" id="signIn">
 

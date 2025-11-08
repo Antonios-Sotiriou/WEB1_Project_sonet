@@ -1,5 +1,5 @@
 <?php
-    include("functions.php");
+    include("components/functions.php");
 
     $conn = dbconnect();
 
@@ -14,7 +14,7 @@
 
 <body>
 
-    <?php include_once("shared/navbar.php"); ?>
+    <?php include_once("components/navbar.php"); ?>
 
     <div class="register-container" id="signup">
 

@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include("functions.php");
+    include("components/functions.php");
 
     $GLOBALS["conn"] = dbconnect();
 
