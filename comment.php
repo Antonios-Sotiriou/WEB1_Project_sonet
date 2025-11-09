@@ -55,7 +55,7 @@
                                     ?> >
                                     <?php echo $post["first_name"].' '.$post["last_name"]; ?>
                                 </a>
-                                <div class="text-muted small"><?php echo $post["created_at"] ?></div>
+                                <div class="text-muted small"><?php echo date("d.m.Y, H:i", strtotime($post["created_at"])); ?></div>
                             </div>
                         </div>
                     
@@ -154,7 +154,7 @@
                                 <textarea class="form-control" aria-label="With textarea" name="comm_content"></textarea>
                             </div>
 
-                            <div>
+                            <div class="pt-1">
                                 <button type="submit" class="btn btn-primary" id="post-btn" name="commentCreate">Post</button>
                             </div>
                         </form>
@@ -201,7 +201,7 @@
                                         ?> >
                                         <?php echo $comment["first_name"].' '.$comment["last_name"]; ?>
                                     </a>
-                                    <div class="text-muted small"><?php echo $comment["created_at"] ?></div>
+                                    <div class="text-muted small"><?php echo date("d.m.Y, H:i", strtotime($post["created_at"])); ?></div>
                                 </div>
                             </div>
                         
