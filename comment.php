@@ -30,35 +30,6 @@
 
     <?php include_once("components/navbar.php"); ?>
 
-    
-    <?php  
-        /*/
-        // Get the post ID from the URL
-        if (isset($_GET['id'])) {
-            $post_id = intval($_GET['id']); // Convert to integer for safety
-            $sql = "
-                SELECT posts.*, users.first_name, users.last_name, users.user_id AS userID, prof_images.img_name, prof_images.img_id
-                FROM posts
-                INNER JOIN users ON posts.user_id = users.user_id
-                LEFT JOIN prof_images ON users.user_id = prof_images.user_id
-                WHERE posts.post_id = $post_id
-            ";
-
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $post = $result->fetch_assoc();
-            } 
-            else {
-                echo "Post not found.";
-            }
-        } 
-        else {
-            echo "No post ID provided in the URL.";
-        }
-        /*/
-    ?>
-
     <?php $post = fetchPostsById($conn,$post_id); ?>
 
     <?php if($post!=null ) {?>
