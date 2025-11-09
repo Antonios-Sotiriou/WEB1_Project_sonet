@@ -201,6 +201,7 @@
                                         ?> >
                                         <?php echo $comment["first_name"].' '.$comment["last_name"]; ?>
                                     </a>
+                                    <div class="text-muted small"><?php echo $comment["created_at"] ?></div>
                                 </div>
                             </div>
                         
