@@ -294,6 +294,7 @@ function fetchComments($conn,$post_id) {
         JOIN users ON comments.user_id = users.user_id
         LEFT JOIN prof_images ON comments.user_id = prof_images.user_id
         WHERE comments.post_id = $post_id
+        ORDER BY comments.created_at ASC
     ");
 
     while ($row = $sql->fetch_assoc()) {
