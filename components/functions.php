@@ -1,5 +1,7 @@
 <?php
 
+use Dom\Comment;
+
 function dbconnect() {
     $host = "localhost";
     $user = "root";
@@ -253,6 +255,55 @@ function fetchPosts($conn) {
     }
     
     return $posts;
+}
+
+function fetchPostsById($conn,$post_id) {
+    $query = mysqli_query($conn,
+        "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
+        FROM posts 
+        JOIN users ON posts.user_id = users.user_id 
+        LEFT JOIN prof_images ON posts.user_id = prof_images.user_id 
+        WHERE posts.post_id = $post_id"
+    );
+
+    while($row = $query->fetch_assoc()) {
+        $post[] = $row;
+    }
+    
+    if(isset($post))
+        return $post[0];
+
+    return null;
+}
+
+function fetchComments($conn,$post_id) {
+    $post_id = intval($post_id);
+
+    // SQL query joins comments with users to show commenter info
+    $sql = mysqli_query($conn,
+        "SELECT 
+            comments.comm_id,
+            comments.created_at,
+            comments.comm_content,
+            users.user_id,
+            users.first_name,
+            users.last_name,
+            users.email,
+            prof_images.img_name
+        FROM comments
+        JOIN users ON comments.user_id = users.user_id
+        LEFT JOIN prof_images ON comments.user_id = prof_images.user_id
+        WHERE comments.post_id = $post_id
+    ");
+
+    while ($row = $sql->fetch_assoc()) {
+        $comments[] = $row;
+    }
+
+    if(isset($comments))
+        return $comments;
+
+    return null;
 }
 
 function handleUserLike($post_id, $user_id) {
