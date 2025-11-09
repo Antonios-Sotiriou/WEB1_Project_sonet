@@ -195,8 +195,12 @@
                                             ?>
                                 >
                                 <div class="user-post-info">
-                                    <?php echo $comment["first_name"].' '.$comment["last_name"] ?>
-                                    
+                                    <a class="post-user-profile-link"
+                                    href=<?php 
+                                            echo "profile.php?firstName=".$comment["first_name"].'&lastName='.$comment["last_name"].'&user_id='.$comment["user_id"]; 
+                                        ?> >
+                                        <?php echo $comment["first_name"].' '.$comment["last_name"]; ?>
+                                    </a>
                                 </div>
                             </div>
                         
