@@ -49,7 +49,12 @@
                                             ?>
                             >
                             <div class="user-post-info">
-                                <?php echo $post["first_name"].' '.$post["last_name"] ?>
+                                <a class="post-user-profile-link"
+                                    href=<?php 
+                                        echo "profile.php?firstName=".$post["first_name"].'&lastName='.$post["last_name"].'&user_id='.$post["user_id"]; 
+                                    ?> >
+                                    <?php echo $post["first_name"].' '.$post["last_name"]; ?>
+                                </a>
                                 <div class="text-muted small"><?php echo $post["created_at"] ?></div>
                             </div>
                         </div>
