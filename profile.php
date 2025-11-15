@@ -48,14 +48,14 @@
         <?php
             if ($_SERVER["REQUEST_METHOD"] === "GET") {
                 if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
-                    updateProfileForm($GLOBALS);
+                    include("components/update_profile_form.php");
                 } else {
                     $user_info = fetchUserInfo($conn, $_GET["user_id"]);
                     $total_posts = fetchUserTotalPosts($conn, $_GET["user_id"]);
-                    infoProfileForm($user_info, $total_posts);
+                    include("components/info_profile_form.php");
                 }
             } else if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                updateProfileForm($GLOBALS);
+                include("components/info_profile_form.php");
             }
         ?>
     </div>

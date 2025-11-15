@@ -1,7 +1,5 @@
 <?php
 
-use Dom\Comment;
-
 function dbconnect() {
     $host = "localhost";
     $user = "root";
@@ -100,42 +98,66 @@ function userUpdate($conn, $_post, $user) {
 
     if (!empty($_FILES["uploadPhoto"]["name"])) {
 
-        if (in_array($_FILES["uploadPhoto"]["type"], allowedImages())) {
+        uploadImage($conn, $_FILES["uploadPhoto"], $user);
+    }
+    echo '<script type="text/javascript">history.go(-1);</script>';
+}
 
-            $folder = 'media/'.$user["md_email"].'/';
-            $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
+function uploadImage($conn, $img, $user) {
+    $error = "";
+    $check = getimagesize($img["tmp_name"]);
+    if ($check === false) {
+        echo '<script type="text/javascript">alert("File is not an image.");history.go(-1);</script>';
+        die();
+    }
 
-            if (!is_dir($folder)) {
-                mkdir($folder, recursive: true);
-            }
+    if (!in_array($img["type"], allowedImages())) {
+        echo '<script type="text/javascript">alert("Image format is not allowed");history.go(-1);</script>';
+        die();
+    }   
 
-            if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
-                $img_name = $_FILES["uploadPhoto"]["name"];
+    $folder = 'media/'.$user["md_email"].'/';
+    $destination = $folder.''.$_FILES["uploadPhoto"]["name"];
 
-                echo $img_name;
+    if (!is_dir($folder)) {
+        mkdir($folder, recursive: true);
+    }
 
-                $check_entry = "SELECT * FROM prof_images WHERE user_id = '$user_id'";
-                $result = $conn->query($check_entry);
-                if ($result->num_rows > 0) {
-                    $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user_id'";
-                    if ($conn->query($updateQuery) == TRUE) {
-                        header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user_id);
-                    } else {
-                        echo "<h3>File update failed!!!</h3>";
-                    }
-                } else {
-                    $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user_id', '$img_name')";
-                    if ($conn->query($insertQuery) == TRUE) {
-                        header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user_id);
-                    }
-                }
+    if (move_uploaded_file($_FILES["uploadPhoto"]["tmp_name"], $destination)) {
+        $img_name = $_FILES["uploadPhoto"]["name"];
+
+        $check_entry = "SELECT * FROM prof_images WHERE user_id = '$user[user_id]'";
+        $result = $conn->query($check_entry);
+        if ($result->num_rows > 0) {
+            $updateQuery = "UPDATE prof_images SET img_name = '$img_name' WHERE user_id = '$user[user_id]'";
+            if ($conn->query($updateQuery) == TRUE) {
+                header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user["user_id"]);
             } else {
-                echo "<h3>File upload failed!!!</h3>";
+                $error = "File update failed!";
             }
         } else {
-            echo "<h3>Image format is not allowed. Use either jpg or png!</h3>";
+            $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user[user_id]', '$img_name')";
+            if ($conn->query($insertQuery) == TRUE) {
+                header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user["user_id"]);
+            }
         }
+    } else {
+        $error = "File upload failed!";
     }
+
+    if ($error !== "") {
+        echo "<h3 style='text-align: center;'>.$error.</h3>";
+    }
+}
+
+function allowedImages() {
+    $allowed = array (
+        "image/pjpeg","image/jpeg", "image/JPG", 
+        "image/X-PNG", "image/PNG", "image/png","image/x-png",
+        // "image/bmp", "image/BMP"
+    );
+    
+    return $allowed;
 }
 
 function isAdmin($conn, $user_id) {
@@ -294,7 +316,7 @@ function fetchComments($conn,$post_id) {
         JOIN users ON comments.user_id = users.user_id
         LEFT JOIN prof_images ON comments.user_id = prof_images.user_id
         WHERE comments.post_id = $post_id
-        ORDER BY comments.created_at ASC
+        ORDER BY comments.created_at DESC
     ");
 
     while ($row = $sql->fetch_assoc()) {
@@ -376,16 +398,6 @@ function userInComments($user_id, $post_id) {
     return mysqli_num_rows($query);
 }
 
-function allowedImages() {
-    $allowed = array (
-        "image/pjpeg","image/jpeg", "image/JPG", 
-        "image/X-PNG", "image/PNG", "image/png","image/x-png",
-        // "image/bmp", "image/BMP"
-    );
-    
-    return $allowed;
-}
-
 // Funtions which help us avoiding repeating our self. ######################################################
 function displayHeader($page_title, $style_css) {
     echo "
@@ -401,70 +413,6 @@ function displayHeader($page_title, $style_css) {
         </head>
         </html>
     ";
-}
-
-// Display update profile form ######################################################
-function updateProfileForm($globals) {
-    echo '<form method="post" action="profile.php" enctype="multipart/form-data">
-
-        <div class="input-group">
-            <input type="text" name="firstName" id="first-name" placeholder="First Name">
-            <label for="first-name">'.$globals["active_user"]["first_name"].'</label>
-        </div>
-        <div class="input-group">
-            <input type="text" name="lastName" id="last-name" placeholder="Last Name">
-            <label for="last-name">'.$globals["active_user"]["last_name"].'</label>
-        </div>
-
-        <div>
-            <div>
-                <small class="custom-file-label" for="inputGroupFile">Upload a profile photo</small>
-            </div>
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="inputGroupFile" name="uploadPhoto">
-            </div>
-        </div>
-
-        <input type="submit" class="btn-submit" value="Update" name="profileUpdate">
-    </form>
-
-    <p class="or">
-    ---------- or ----------
-    </p>
-
-    <div class="profile-cancel-btn text-center">
-        <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Cancel</a>
-    </div>';
-}
-
-function infoProfileForm($user_info, $total_posts) {
-    echo '<div class="container-fluid row text-center m-1">
-        <div class="col col-12 col-md-6">First name</div>
-        <div class="col col-12 col-md-6 linear-bg">'.$user_info["first_name"].'</div>
-    </div>
-
-    <div class="container-fluid row text-center m-1">
-        <div class="col col-12 col-md-6">Last name</div>
-        <div class="col col-12 col-md-6 linear-bg">'.$user_info["last_name"].'</div>
-    </div>
-
-    <div class="container-fluid row text-center m-1">
-        <div class="col col-12 col-md-6">Date joined</div>
-        <div class="col col-12 col-md-6 linear-bg">'.date("d.m.Y", strtotime($user_info["date_joined"])).'</div>
-    </div>
-
-    <div class="container-fluid row text-center m-1">
-        <div class="col col-12 col-md-6">Total Posts</div>
-        <div class="col col-12 col-md-6 linear-bg">'.$total_posts.'</div>
-    </div>
-
-    <p class="or">
-    ------------------------
-    </p>
-
-    <div class="profile-cancel-btn text-center">
-        <a class="btn btn-primary" href="home.php" role="button" id="cancel-btn">Home</a>
-    </div>';
 }
 
 // Helper Functions ######################################################
