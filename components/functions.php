@@ -2,8 +2,8 @@
 
 function dbconnect() {
     $host = "localhost";
-    $user = "root";
-    $pass = "";
+    $user = "guest";
+    $pass = "Z3KDHonGY@vmRw0)";
     $db = "web1_project_sonet";
     $conn = new mysqli($host, $user, $pass, $db);
 
