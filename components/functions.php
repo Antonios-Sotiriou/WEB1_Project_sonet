@@ -16,18 +16,21 @@ function dbconnect() {
 
 function userLogIn($conn, $info) {
     $email = htmlspecialchars($info["email"]);
-    $password = $info["password"];
-    $password = md5($password);
 
-    $retrieve_user = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
+    $retrieve_user = "SELECT * FROM users WHERE email = '$email'";
     $result = $conn->query($retrieve_user);
     if ($result->num_rows > 0) {
-        session_start();
         $row = $result->fetch_assoc();
-        $_SESSION["email"] = $row["email"];
-        header("Location: home.php");
+
+        if (password_verify($info["password"], $row["password"])) {
+            session_start();
+            $_SESSION["email"] = $row["email"];
+            header("Location: home.php");
+        } else {
+            echo "Invalid password.\n";
+        }
     } else {
-        echo "User not found! Check your email and password for type mistakes!";
+        echo "User not found! Check your email address for type mistakes!";
     }
 }
 
@@ -47,15 +50,14 @@ function userRegister($conn, $_post) {
                 if (ctype_alpha($last_name)) {
 
                     $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
-                    $password = $_post["password"];
-                    $password = md5($password);
+                    $hash = password_hash($_post["password"], PASSWORD_DEFAULT);
 
                     $check_email = "SELECT * FROM users WHERE email='$email'";
                     $result = $conn->query($check_email);
                     if ($result->num_rows > 0) {
                         echo "Email address already exists!";
                     } else {
-                        $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
+                        $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$hash')";
                         if ($conn->query($insertQuery) == TRUE) {
                             header("location: login.php");
                         } else {
