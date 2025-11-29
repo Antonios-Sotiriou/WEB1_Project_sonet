@@ -34,43 +34,69 @@ function userLogIn($conn, $info) {
     }
 }
 
-function userRegister($conn, $_post) {
-    $first_name = trim($_post["firstName"]);
+function verifyFirstName($firstName) {
+
+    $first_name = trim($firstName);
     if ($first_name === '') {
-        echo "First name is empty";
+        echo "First name is empty!";
+        return NULL;
+    }
+
+    if (!ctype_alpha($first_name)) {
+        echo "Special Charakters, spaces or numbers are not allowed in First name!";
+        return NULL;
+    }
+
+    return $first_name;
+}
+
+function verifyLastName($lastName) {
+
+    $last_name = trim($lastName);
+    if ($last_name === '') {
+        echo "Last name is empty!";
+        return NULL;
+    }
+
+    if (!ctype_alpha($last_name)) {
+        echo "Special Charakters, spaces or numbers are not allowed in Last name!";
+        return NULL;
+    }
+
+    return $last_name;
+}
+
+function userRegister($conn, $_post) {
+
+    $first_name = verifyFirstName($_post["firstName"]);
+    if (empty($first_name)) {
         return;
-    } else {
-        if (ctype_alpha($first_name)) {
+    }
 
-            $last_name = trim($_post["lastName"]);
-            if ($last_name === '') {
-                echo "Last name is empty";
-                return;
-            } else {
-                if (ctype_alpha($last_name)) {
+    $last_name = verifyLastName($_post["lastName"]);
+    if (empty($last_name)) {
+        return;
+    }
 
-                    $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
-                    $hash = password_hash($_post["password"], PASSWORD_DEFAULT);
+    if ($_post["password"] === $_post["repeat_password"]) {
 
-                    $check_email = "SELECT * FROM users WHERE email='$email'";
-                    $result = $conn->query($check_email);
-                    if ($result->num_rows > 0) {
-                        echo "Email address already exists!";
-                    } else {
-                        $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$hash')";
-                        if ($conn->query($insertQuery) == TRUE) {
-                            header("location: login.php");
-                        } else {
-                            echo "An error has occured!".htmlspecialchars($conn->error);
-                        }
-                    }
-                } else {
-                    echo "Special Charakters, spaces or numbers are not allowed in Last name!";
-                }
-            }
+        $email = filter_var($_post["email"], FILTER_VALIDATE_EMAIL);
+        $hash = password_hash($_post["password"], PASSWORD_DEFAULT);
+
+        $check_email = "SELECT * FROM users WHERE email='$email'";
+        $result = $conn->query($check_email);
+        if ($result->num_rows > 0) {
+            echo "Email address already exists!";
         } else {
-            echo "Special Charakters, spaces or numbers are not allowed in First name!";
+            $insertQuery = "INSERT INTO users(first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$hash')";
+            if ($conn->query($insertQuery) == TRUE) {
+                header("location: login.php");
+            } else {
+                echo "An error has occured!".htmlspecialchars($conn->error);
+            }
         }
+    } else {
+        echo 'Passwords not matching. Please check for typing mistakes.';
     }
 }
 
@@ -78,23 +104,23 @@ function userUpdate($conn, $_post, $user) {
     $user_id = $user["user_id"];
 
     if (!empty($_post["firstName"])) {
-        if (ctype_alpha($_post["firstName"])) {
-            $first_name = trim($_post["firstName"]);
-
-            $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
-            if ($conn->query($insertQuery) == TRUE) {
-                header('Location: profile.php?firstName='.$first_name.'&lastName='.$user["last_name"].'&user_id='.$user_id);
-            }
+        $first_name = verifyFirstName($_post["firstName"]);
+        if (empty($first_name)) {
+            return;
+        }
+        $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
+        if ($conn->query($insertQuery) == TRUE) {
+            header('Location: profile.php?firstName='.$first_name.'&lastName='.$user["last_name"].'&user_id='.$user_id);
         }
     }
     if (!empty($_post["lastName"])) {
-        if (ctype_alpha($_post["lastName"])) {
-            $last_name = trim($_post["lastName"]);
-
-            $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
-            if ($conn->query($insertQuery) == TRUE) {
-                header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
-            }
+        $last_name = verifyLastName($_post["lastName"]);
+        if (empty($last_name)) {
+            return;
+        }
+        $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
+        if ($conn->query($insertQuery) == TRUE) {
+            header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
         }
     }
 
@@ -274,8 +300,11 @@ function fetchPosts($conn) {
         ORDER BY posts.created_at DESC;"
     );
 
-    while($row = $query->fetch_assoc()) {
-        $posts[] = $row;
+    $posts = NULL;
+    if ($query->num_rows != 0) {
+        while($row = $query->fetch_assoc()) {
+            $posts[] = $row;
+        }
     }
     
     return $posts;

@@ -5,12 +5,12 @@
                 
                 <img class ="user-post-image"
                         src   = <?php 
-                                if (isset($post["img_name"])) {
-                                    echo "media/".md5($post["email"])."/".$post["img_name"]; 
-                                } else {
-                                    echo "images/default_user.jpg";  
-                                }
-                                ?>
+                            if (isset($post["img_name"])) {
+                                echo "media/".md5($post["email"])."/".$post["img_name"]; 
+                            } else {
+                                echo "images/default_user.jpg";  
+                            }
+                        ?>
                 >
                 <div class="user-post-info">
                     <a class="post-user-profile-link"
@@ -49,12 +49,12 @@
                     <input type     = "image"
                             class   = "post-interactions-image" 
                             src     = <?php 
-                                            if (userInLikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
-                                                echo "images/alreadyliked.png";
-                                            } else {
-                                                echo "images/like.png"; 
-                                            }
-                                        ?>
+                                if (userInLikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                    echo "images/alreadyliked.png";
+                                } else {
+                                    echo "images/like.png"; 
+                                }
+                            ?>
                             id      = <?php echo "post_".$post["post_id"]."_like_img"; ?> 
                             name    = "like_post" 
                             user_id = <?php echo $GLOBALS["active_user"]["user_id"]; ?>
@@ -67,12 +67,12 @@
                         <a href="comment.php?id=<?php echo $post['post_id']; ?>"> <!-- Änderung to work with comments -->
                             <img class  ="post-interactions-image"
                                 src     = <?php 
-                                            if (userInComments($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
-                                                echo "images/alreadycommented.png"; 
-                                            } else {
-                                                echo "images/comment.png"; 
-                                            }
-                                        ?>
+                                    if (userInComments($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                        echo "images/alreadycommented.png"; 
+                                    } else {
+                                        echo "images/comment.png"; 
+                                    }
+                                ?>
                                 id      = <?php echo "post_".$post["post_id"]."_comments_img"; ?> 
                                 name    = "comment_post" 
                                 user_id = <?php echo $GLOBALS["active_user"]["user_id"]; ?>
@@ -83,17 +83,17 @@
                 </div>
 
                 <div class="post-footer-interactions">
-                    <input type   = "image" 
-                            class = "post-interactions-image" 
+                    <input type     = "image" 
+                            class   = "post-interactions-image" 
                             src     = <?php 
-                                            if (userInDislikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
-                                                echo "images/alreadydisliked.png";
-                                            } else {
-                                                echo "images/dislike.png"; 
-                                            }
-                                        ?>
-                            id    = <?php echo "post_".$post["post_id"]."_dislike_img"; ?>
-                            name  = "dislike_post" 
+                                if (userInDislikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                    echo "images/alreadydisliked.png";
+                                } else {
+                                    echo "images/dislike.png"; 
+                                }
+                            ?>
+                            id      = <?php echo "post_".$post["post_id"]."_dislike_img"; ?>
+                            name    = "dislike_post" 
                             user_id = <?php echo $GLOBALS["active_user"]["user_id"]; ?>
                             post_id = <?php echo $post["post_id"]; ?>  
                     >

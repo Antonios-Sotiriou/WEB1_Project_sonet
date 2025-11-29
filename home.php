@@ -18,9 +18,11 @@
     <div class="posts-container">
 
         <?php 
-            foreach($posts as $post) {
-                include("components/post_body.php");
-            }
+           if (!empty($posts)) {
+                foreach($posts as $post) {
+                    include("components/post_body.php");
+                }
+           }
         ?>
     </div>
 

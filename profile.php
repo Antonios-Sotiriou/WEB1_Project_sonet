@@ -47,6 +47,7 @@
         <h1 class="form-title">Profile</h1>
         <?php
             if ($_SERVER["REQUEST_METHOD"] === "GET") {
+
                 if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
                     include("components/update_profile_form.php");
                 } else {
@@ -55,7 +56,8 @@
                     include("components/info_profile_form.php");
                 }
             } else if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                include("components/info_profile_form.php");
+
+                include("components/update_profile_form.php");
             }
         ?>
     </div>

@@ -25,20 +25,24 @@
         <h1 class="form-title">Register</h1>
         <form action="register.php" method="post">
             <div class="input-group">
-                <input type="text" name="firstName" id="first-name" placeholder="First Name" value=<?php echo $_POST["firstName"] ?? ""; ?>>
-                <label for="first-name">First Name</label>
+                <input class="register-input" type="text" name="firstName" id="first-name" placeholder="First Name" value=<?php echo $_POST["firstName"] ?? ""; ?>>
+                <label class="register-label" for="first-name">First Name</label>
             </div>
             <div class="input-group">
-                <input type="text" name="lastName" id="last-name" placeholder="Last Name" value=<?php echo $_POST["lastName"] ?? ""; ?>>
-                <label for="last-name">Last Name</label>
+                <input class="register-input" type="text" name="lastName" id="last-name" placeholder="Last Name" value=<?php echo $_POST["lastName"] ?? ""; ?>>
+                <label class="register-label" for="last-name">Last Name</label>
             </div>
             <div class="input-group">
-                <input type="email" name="email" id="email" placeholder="Email" value=<?php echo $_POST["email"] ?? ""; ?>>
-                <label for="email">Email</label>
+                <input class="register-input" type="email" name="email" id="email" placeholder="Email" value=<?php echo $_POST["email"] ?? ""; ?>>
+                <label class="register-label" for="email">Email</label>
             </div>
             <div class="input-group">
-                <input type="password" name="password", id="password" placeholder="Password" required>
-                <label for="password">Password</label>
+                <input class="register-input" type="password" name="password" id="password" placeholder="Password" required>
+                <label class="register-label" for="password">Password</label>
+            </div>
+            <div class="input-group">
+                <input class="register-input" type="password" name="repeat_password" id="password" placeholder="Password Repeat" required>
+                <label class="register-label" for="repeat_password">Repeat password</label>
             </div>
             <input type="submit" class="btn-submit" value="signUp" name="signUp">
         </form>

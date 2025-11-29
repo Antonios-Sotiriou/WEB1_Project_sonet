@@ -107,6 +107,14 @@ label {
     transition:0.3s ease all;
 }
 
+.register-input {
+    z-index: 2;
+}
+
+.register-label {
+    z-index: 1;
+}
+
 input:focus~label,input:not(:placeholder-shown)~label {
     top:-3em;
     color:hsl(327,90%,28%);
