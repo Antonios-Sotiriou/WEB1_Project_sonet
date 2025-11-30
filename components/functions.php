@@ -27,10 +27,10 @@ function userLogIn($conn, $info) {
             $_SESSION["email"] = $row["email"];
             header("Location: home.php");
         } else {
-            echo "Invalid password.\n";
+            raise_error("Invalid password.");
         }
     } else {
-        echo "User not found! Check your email address for type mistakes!";
+        raise_error("User not found! Check your email address for type mistakes!");
     }
 }
 
@@ -38,12 +38,12 @@ function verifyFirstName($firstName) {
 
     $first_name = trim($firstName);
     if ($first_name === '') {
-        echo "First name is empty!";
+        raise_error("First name is empty!");
         return NULL;
     }
 
     if (!ctype_alpha($first_name)) {
-        echo "Special Charakters, spaces or numbers are not allowed in First name!";
+        raise_error("Special Charakters, spaces or numbers are not allowed in First name!");
         return NULL;
     }
 
@@ -54,12 +54,12 @@ function verifyLastName($lastName) {
 
     $last_name = trim($lastName);
     if ($last_name === '') {
-        echo "Last name is empty!";
+        raise_error("Last name is empty!");
         return NULL;
     }
 
     if (!ctype_alpha($last_name)) {
-        echo "Special Charakters, spaces or numbers are not allowed in Last name!";
+        raise_error("Special Charakters, spaces or numbers are not allowed in Last name!");
         return NULL;
     }
 
@@ -92,56 +92,64 @@ function userRegister($conn, $_post) {
             if ($conn->query($insertQuery) == TRUE) {
                 header("location: login.php");
             } else {
-                echo "An error has occured!".htmlspecialchars($conn->error);
+                raise_error("An error has occured!".htmlspecialchars($conn->error));
             }
         }
     } else {
-        echo 'Passwords not matching. Please check for typing mistakes.';
+        raise_error('Passwords not matching. Please check for typing mistakes.');
     }
 }
 
-function userUpdate($conn, $_post, $user) {
+function userUpdate($conn, $_post, $user): int {
+    $error = 0;
     $user_id = $user["user_id"];
+    $queries_array = array();
 
     if (!empty($_post["firstName"])) {
         $first_name = verifyFirstName($_post["firstName"]);
         if (empty($first_name)) {
-            return;
-        }
-        $insertQuery = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
-        if ($conn->query($insertQuery) == TRUE) {
-            header('Location: profile.php?firstName='.$first_name.'&lastName='.$user["last_name"].'&user_id='.$user_id);
+            $error = 1;
+        } else {
+            $queries_array[] = "UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id";
         }
     }
+
     if (!empty($_post["lastName"])) {
         $last_name = verifyLastName($_post["lastName"]);
         if (empty($last_name)) {
-            return;
-        }
-        $insertQuery = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
-        if ($conn->query($insertQuery) == TRUE) {
-            header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
+            $error = 1;
+        } else {
+            $queries_array[] = "UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'";
         }
     }
 
     if (!empty($_FILES["uploadPhoto"]["name"])) {
 
-        uploadImage($conn, $_FILES["uploadPhoto"], $user);
+        if (!uploadImage($conn, $_FILES["uploadPhoto"], $user)) {
+            $error = 1;
+        }
     }
-    echo '<script type="text/javascript">history.go(-1);</script>';
+    if ($error) {
+        return 0;
+    } else {
+        foreach ($queries_array as $query) {
+            $conn->query($query);
+        }
+    }
+    header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
+    return 1;
 }
 
-function uploadImage($conn, $img, $user) {
-    $error = "";
+function uploadImage($conn, $img, $user): int {
     $check = getimagesize($img["tmp_name"]);
     if ($check === false) {
-        echo '<script type="text/javascript">alert("File is not an image.");history.go(-1);</script>';
-        die();
+        raise_error("File is not an image.");
+        return 0;
     }
 
     if (!in_array($img["type"], allowedImages())) {
-        echo '<script type="text/javascript">alert("Image format is not allowed");history.go(-1);</script>';
-        die();
+        raise_error("Image format is not allowed"); 
+        return 0;
     }   
 
     $folder = 'media/'.$user["md_email"].'/';
@@ -161,7 +169,8 @@ function uploadImage($conn, $img, $user) {
             if ($conn->query($updateQuery) == TRUE) {
                 header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$user["last_name"].'&user_id='.$user["user_id"]);
             } else {
-                $error = "File update failed!";
+                raise_error("File update failed!");
+                return 0;
             }
         } else {
             $insertQuery = "INSERT INTO prof_images (user_id, img_name) VALUES ('$user[user_id]', '$img_name')";
@@ -170,12 +179,11 @@ function uploadImage($conn, $img, $user) {
             }
         }
     } else {
-        $error = "File upload failed!";
+        raise_error("File upload failed!");
+        return 0;
     }
 
-    if ($error !== "") {
-        echo "<h3 style='text-align: center;'>.$error.</h3>";
-    }
+    return 1;
 }
 
 function allowedImages() {
@@ -188,12 +196,12 @@ function allowedImages() {
     return $allowed;
 }
 
-function isAdmin($conn, $user_id) {
-        $query = mysqli_query($conn, 
-            "SELECT * FROM admins WHERE admins.user_id='$user_id'"
-        );
+function isAdmin($conn, $user_id): int {
+    $query = mysqli_query($conn, 
+        "SELECT * FROM admins WHERE admins.user_id='$user_id'"
+    );
 
-        return mysqli_num_rows($query);
+    return mysqli_num_rows($query);
 }
 
 function fetchCurrentUser($conn) {
@@ -419,32 +427,32 @@ function handleUserDislike($post_id, $user_id) {
     }
 }
 
-function fetchTotalLikes($conn, $post_id) {
+function fetchTotalLikes($conn, $post_id): int {
     $query_likes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM likes WHERE likes.post_id = $post_id");
 
     return mysqli_num_rows($query_likes_total);
 }
-function fetchTotalDislikes($conn, $post_id) {
+function fetchTotalDislikes($conn, $post_id): int {
     $query_dislikes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM dislikes WHERE dislikes.post_id = $post_id");
 
     return mysqli_num_rows($query_dislikes_total);
 }
-function fetchTotalComments($conn, $post_id) {
+function fetchTotalComments($conn, $post_id): int {
     $query_comments_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM comments WHERE comments.post_id = $post_id");
 
     return mysqli_num_rows($query_comments_total);
 }
-function userInLikes($user_id, $post_id) {
+function userInLikes($user_id, $post_id): int {
     $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM likes WHERE likes.user_id = $user_id AND likes.post_id = $post_id");
 
     return mysqli_num_rows($query);
 }
-function userInDislikes($user_id, $post_id) {
+function userInDislikes($user_id, $post_id): int {
     $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM dislikes WHERE dislikes.user_id = $user_id AND dislikes.post_id = $post_id");
 
     return mysqli_num_rows($query);
 }
-function userInComments($user_id, $post_id) {
+function userInComments($user_id, $post_id): int {
     $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM comments WHERE comments.user_id = $user_id AND comments.post_id = $post_id");
 
     return mysqli_num_rows($query);
@@ -468,6 +476,9 @@ function displayHeader($page_title, $style_css) {
 }
 
 // Helper Functions ######################################################
+function raise_error($error_message) {
+    echo "<h3 style='text-align: center;'>".$error_message."</h3>";
+}
 function enableDebugging() {
     error_reporting(E_ALL);
     ini_set('display_errors', 'On');
