@@ -281,8 +281,13 @@ function fetchUserInfo($conn, $user_id) {
 }
 
 function createPost($conn, $_post, $globals) {
-    $user_id = $GLOBALS["active_user"]["user_id"];
-    $content = htmlspecialchars($_POST["post_content"]);
+    $user_id = $globals["active_user"]["user_id"];
+    $content = htmlspecialchars(trim($_POST["post_content"]));
+
+    if (empty($content)) {
+        echo "Post content is empty.";
+        return;
+    }
     $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
     if ($conn->query($insertQuery) == TRUE) {
         header("location: home.php");
@@ -327,6 +332,22 @@ function fetchPostsById($conn,$post_id) {
         return $post[0];
 
     return null;
+}
+
+function createComment($conn, $post_id, $content, $user_id): int {
+    $content = htmlspecialchars(trim($content));
+    if (empty($content)) {
+        echo "Comment content is empty.";
+        return 0;
+    }
+    $insertQuery = "INSERT INTO comments(post_id, user_id, comm_content) VALUES ($post_id,'$user_id','$content')";
+    if ($conn->query($insertQuery) == TRUE) {
+        echo "$content";
+        header("location: comment.php?id=$post_id");
+    } else {
+        echo "An error has occured!".$conn->error;
+    }
+    return 1;
 }
 
 function fetchComments($conn,$post_id) {

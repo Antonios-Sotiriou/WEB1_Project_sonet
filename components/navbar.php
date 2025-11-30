@@ -11,7 +11,7 @@
 
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
-            <?php echo $GLOBALS["active_user"]["first_name"].' '.$GLOBALS["active_user"]["last_name"] ?>
+            <?php echo $GLOBALS["active_user"]["first_name"].' '.$GLOBALS["active_user"]["last_name"]; ?>
 
             <ul class="navbar-nav">
 
@@ -30,7 +30,7 @@
                 ?>
 
                 <div class="user-image-container" id="user-image">
-                    <img class="navbar-user-image" src= <?php echo $GLOBALS["active_user"]["profile_image"] ?> alt="" width="30" height="24">
+                    <img class="navbar-user-image" src= <?php echo $GLOBALS["active_user"]["profile_image"]; ?> alt="" width="30" height="24">
                 </div>
 
                 <li class="nav-item dropdown" id="dropdown-menu-id">

@@ -10,6 +10,9 @@
         if(isset($_POST["postCreate"])) {
             createPost($conn, $_POST, $GLOBALS);
         }
+    } else {
+        header("HTTP/1:1 404 Not Found");
+        die();
     }
 ?>
 

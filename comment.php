@@ -11,15 +11,7 @@
         $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
         if(isset($_POST["commentCreate"])) {
-            $user_id = $GLOBALS["active_user"]["user_id"];
-            $content = $_POST["comm_content"];
-            $insertQuery = "INSERT INTO comments(post_id,user_id, comm_content) VALUES ($post_id,'$user_id','$content')";
-            if ($conn->query($insertQuery) == TRUE) {
-                echo "$content";
-                header("location: comment.php?id=$post_id");
-            } else {
-                echo "An error has occured!".$conn->error;
-            }
+            createComment($conn, $post_id, $_POST["comm_content"], $GLOBALS["active_user"]["user_id"]);
         }
     }
 ?>
@@ -47,7 +39,7 @@
                         
                         <div class="container" id="signIn">
 
-                            <h3 class="form-title">Whould you like to comment?</h3>
+                            <h3 class="form-title">Would you like to comment?</h3>
                             <form method="post" action="comment.php?id=<?php echo $post_id; ?>">
                                 <div class="input-group">
                                     <textarea class="form-control" aria-label="With textarea" name="comm_content"></textarea>
@@ -108,10 +100,8 @@
                         </div>
                     </div>
                 </div>
-            <?php
-            }
-            ?>
         <?php
+            }
         }
         ?>
     </div>
