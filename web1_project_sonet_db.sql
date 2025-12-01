@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 29. Nov 2025 um 01:00
+-- Erstellungszeit: 01. Dez 2025 um 23:50
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -20,6 +20,60 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `web1_project_sonet`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `admins`
+--
+
+CREATE TABLE `admins` (
+  `user_id` int(11) NOT NULL,
+  `date_joined` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `admins`
+--
+
+INSERT INTO `admins` (`user_id`, `date_joined`) VALUES
+(20, '2025-12-01 23:17:18'),
+(11, '2025-12-01 23:30:08');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `comments`
+--
+
+CREATE TABLE `comments` (
+  `comm_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `comm_content` varchar(1024) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `comments`
+--
+
+INSERT INTO `comments` (`comm_id`, `post_id`, `user_id`, `created_at`, `comm_content`) VALUES
+(1, 27, 11, '2025-12-01 23:31:33', 'Oft unterschätzt und sträflich vernachlässigt: Blindtexte! Es muss nicht immer Lorem Ipsum sein. Warum nicht Goethe, Kafka oder ein Pangram? Hier eine Auswahl an Blindtexten und Editoren für Blindtexte.'),
+(2, 29, 13, '2025-12-01 23:48:21', 'Sed ante.'),
+(3, 25, 14, '2025-12-01 23:48:21', 'Aenean fermentum. Donec ut mauris eget massa tempor convallis.'),
+(4, 28, 17, '2025-12-01 23:48:21', 'Etiam vel augue.'),
+(5, 25, 15, '2025-12-01 23:48:21', 'Mauris lacinia sapien quis libero.'),
+(6, 26, 15, '2025-12-01 23:48:21', 'Vivamus tortor. Duis mattis egestas metus.'),
+(7, 29, 18, '2025-12-01 23:48:21', 'Cras in purus eu magna vulputate luctus.'),
+(8, 27, 12, '2025-12-01 23:48:21', 'Phasellus id sapien in sapien iaculis congue.'),
+(9, 29, 14, '2025-12-01 23:48:21', 'In sagittis dui vel nisl.'),
+(10, 26, 15, '2025-12-01 23:48:21', 'Praesent blandit lacinia erat.'),
+(11, 26, 16, '2025-12-01 23:48:21', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin interdum mauris non ligula pellentesque ultrices.'),
+(12, 25, 14, '2025-12-01 23:48:21', 'Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.'),
+(13, 27, 22, '2025-12-01 23:48:21', 'Suspendisse potenti.'),
+(14, 25, 13, '2025-12-01 23:48:21', 'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum.'),
+(15, 26, 19, '2025-12-01 23:48:21', 'Donec semper sapien a libero.');
 
 -- --------------------------------------------------------
 
@@ -147,6 +201,20 @@ INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `date_joined
 --
 
 --
+-- Indizes für die Tabelle `admins`
+--
+ALTER TABLE `admins`
+  ADD KEY `fk_admin_user` (`user_id`);
+
+--
+-- Indizes für die Tabelle `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`comm_id`),
+  ADD KEY `fk_comment_post` (`post_id`),
+  ADD KEY `fk_comment_user` (`user_id`);
+
+--
 -- Indizes für die Tabelle `dislikes`
 --
 ALTER TABLE `dislikes`
@@ -185,6 +253,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT für Tabelle `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `comm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
 -- AUTO_INCREMENT für Tabelle `posts`
 --
 ALTER TABLE `posts`
@@ -205,6 +279,19 @@ ALTER TABLE `users`
 --
 -- Constraints der exportierten Tabellen
 --
+
+--
+-- Constraints der Tabelle `admins`
+--
+ALTER TABLE `admins`
+  ADD CONSTRAINT `fk_admin_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `fk_comment_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_comment_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `dislikes`

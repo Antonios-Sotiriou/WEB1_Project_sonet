@@ -293,14 +293,14 @@ function createPost($conn, $_post, $globals) {
     $content = htmlspecialchars(trim($_POST["post_content"]));
 
     if (empty($content)) {
-        echo "Post content is empty.";
+        raise_error("Post content is empty.");
         return;
     }
     $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
     if ($conn->query($insertQuery) == TRUE) {
         header("location: home.php");
     } else {
-        echo "An error has occured!".htmlspecialchars($conn->error);
+        raise_error("An error has occured!".htmlspecialchars($conn->error));
     }
 }
 
@@ -345,7 +345,7 @@ function fetchPostsById($conn,$post_id) {
 function createComment($conn, $post_id, $content, $user_id): int {
     $content = htmlspecialchars(trim($content));
     if (empty($content)) {
-        echo "Comment content is empty.";
+        raise_error("Comment content is empty.");
         return 0;
     }
     $insertQuery = "INSERT INTO comments(post_id, user_id, comm_content) VALUES ($post_id,'$user_id','$content')";
@@ -353,7 +353,7 @@ function createComment($conn, $post_id, $content, $user_id): int {
         echo "$content";
         header("location: comment.php?id=$post_id");
     } else {
-        echo "An error has occured!".$conn->error;
+        raise_error("An error has occured!".$conn->error);
     }
     return 1;
 }
