@@ -27,7 +27,7 @@
         <div class="profile-photo-container">
             <?php
                 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-                    if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
+                    if ($_GET["user_id"] == $GLOBALS["active_user"]["user_id"]) {
                         echo '<img class="profile-photo" src='.$GLOBALS["active_user"]["profile_image"].' alt="">';
                     } else {
                         $profile_image = fetchUserProfilePhoto($conn, $_GET["user_id"]);
@@ -47,11 +47,10 @@
         <h1 class="form-title">Profile</h1>
         <?php
             if ($_SERVER["REQUEST_METHOD"] === "GET") {
-
-                if ($_GET["user_id"] === $GLOBALS["active_user"]["user_id"]) {
+                if ($_GET["user_id"] == $GLOBALS["active_user"]["user_id"]) {
                     include("components/update_profile_form.php");
                 } else {
-                    $user_info = fetchUserInfo($conn, $_GET["user_id"]);
+                    $user_info = fetchUserInfo($conn, $_GET["firstName"], $_GET["lastName"], $_GET["user_id"]);
                     $total_posts = fetchUserTotalPosts($conn, $_GET["user_id"]);
                     include("components/info_profile_form.php");
                 }

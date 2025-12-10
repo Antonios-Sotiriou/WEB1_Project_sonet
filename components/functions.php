@@ -14,7 +14,7 @@ function dbconnect() {
     return $conn;
 }
 
-function userLogIn($conn, $info) {
+function userLogIn(Mysqli $conn, array $info) {
     $email = htmlspecialchars($info["email"]);
 
     $retrieve_user = $conn->prepare("SELECT * FROM users WHERE email = ?");
@@ -42,7 +42,7 @@ function userLogIn($conn, $info) {
     $result->close();
 }
 
-function verifyFirstName($firstName) {
+function verifyFirstName(string $firstName) {
 
     $first_name = trim($firstName);
     if ($first_name === '') {
@@ -58,7 +58,7 @@ function verifyFirstName($firstName) {
     return $first_name;
 }
 
-function verifyLastName($lastName) {
+function verifyLastName(string $lastName) {
 
     $last_name = trim($lastName);
     if ($last_name === '') {
@@ -74,7 +74,7 @@ function verifyLastName($lastName) {
     return $last_name;
 }
 
-function userRegister($conn, $_post) {
+function userRegister(Mysqli $conn, array $_post) {
 
     $first_name = verifyFirstName($_post["firstName"]);
     if (empty($first_name)) {
@@ -125,7 +125,7 @@ function userRegister($conn, $_post) {
     }
 }
 
-function userUpdate($conn, $_post, $user): int {
+function userUpdate(Mysqli $conn, array $_post, array $user): int {
     $error = 0;
     $user_id = $user["user_id"];
     $queries_array = array();
@@ -167,7 +167,7 @@ function userUpdate($conn, $_post, $user): int {
     return 1;
 }
 
-function uploadImage($conn, $img, $user): int {
+function uploadImage(Mysqli $conn, array $img, array $user): int {
     $check = getimagesize($img["tmp_name"]);
     if ($check === false) {
         raise_error("File is not an image.");
@@ -240,15 +240,23 @@ function allowedImages() {
     return $allowed;
 }
 
-function isAdmin($conn, $user_id): int {
-    $query = mysqli_query($conn, 
-        "SELECT * FROM admins WHERE admins.user_id='$user_id'"
+function isAdmin(Mysqli $conn, int $user_id): int {
+    $query = $conn->prepare( 
+        "SELECT * FROM admins WHERE admins.user_id = ?"
     );
+    $query->execute([$user_id]);
 
-    return mysqli_num_rows($query);
+    $result = $query->get_result();
+
+    $num_of_rows = $result->num_rows;
+
+    $query->close();
+    $result->close();
+
+    return $num_of_rows;
 }
 
-function fetchCurrentUser($conn) {
+function fetchCurrentUser(Mysqli $conn) {
 
     if (isset($_SESSION["email"])) {
         $email = $_SESSION["email"];
@@ -256,13 +264,13 @@ function fetchCurrentUser($conn) {
             "SELECT users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
             FROM users 
             LEFT JOIN prof_images ON users.user_id = prof_images.user_id 
-            WHERE users.email=?"
+            WHERE users.email = ?"
         );
         $query->execute([$email]);
-        printObjectMethods($query);
         if ($query == true) {
 
             $result = $query->get_result();
+            $query->close();
 
             while ($row = $result->fetch_assoc()) {
                 $globals["user_id"] = $row["user_id"];
@@ -285,24 +293,29 @@ function fetchCurrentUser($conn) {
         $globals["email"] = "";
         $globals["profile_image"] = "images/default_user.jpg";
     }
-    $query->close();
 
     return $globals;
 }
 
-function fetchUserProfilePhoto($conn, $user_id) {
-    $query = mysqli_query($conn, 
-        "SELECT users.email, prof_images.img_name FROM users LEFT JOIN prof_images ON prof_images.user_id = users.user_id WHERE users.user_id = '$user_id'"
+function fetchUserProfilePhoto(Mysqli $conn, int $user_id) {
+    $query = $conn->prepare( 
+        "SELECT users.email, prof_images.img_name FROM users 
+        LEFT JOIN prof_images ON prof_images.user_id = users.user_id 
+        WHERE users.user_id = ?"
     );
+    $query->execute([$user_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    if (mysqli_num_rows($query)) {
-        while ($row = mysqli_fetch_array($query)) {
+    if ($result->num_rows) {
+        while ($row = $result->fetch_array()) {
             $email = $row["email"];
             if (empty($row["img_name"])) {
                 return "images/default_user.jpg";
             }
             $img_name = $row["img_name"];
         }
+        $result->close();
     } else {
         return "";
     }
@@ -310,29 +323,38 @@ function fetchUserProfilePhoto($conn, $user_id) {
     return "media/".md5($email)."/".$img_name;
 }
 
-function fetchUserTotalPosts($conn, $user_id) : int {
-    $query = mysqli_query($conn,
-        "SELECT * FROM posts WHERE posts.user_id = $user_id"
+function fetchUserTotalPosts(Mysqli $conn, int $user_id) : int {
+    $query = $conn->prepare(
+        "SELECT * FROM posts WHERE posts.user_id = ?"
     );
+    $query->execute([$user_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    if (mysqli_num_rows($query)) {
-        return mysqli_num_rows($query);
+    if ($result->num_rows) {
+        return $result->num_rows;
     }
 
     return 0;
 }
 
-function fetchUserInfo($conn, $user_id) {
-    $query = mysqli_query($conn,
-        "SELECT first_name, last_name, date_joined FROM users WHERE users.user_id = $user_id"
+function fetchUserInfo(Mysqli $conn, string $first_name, string $last_name, int $user_id) {
+    $query = $conn->prepare(
+        "SELECT first_name, last_name, date_joined FROM users 
+        WHERE users.first_name = ? AND users.last_name = ? AND users.user_id = ?"
     );
+    $query->bind_param("ssi", $first_name, $last_name, $user_id);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
 
-    if (mysqli_num_rows($query)) {
-        while ($row = mysqli_fetch_array($query)) {
+    if ($result->num_rows) {
+        while ($row = $result->fetch_array()) {
             $user_info["first_name"] = $row["first_name"];
             $user_info["last_name"] = $row["last_name"];
             $user_info["date_joined"] = $row["date_joined"];
         }
+        $result->close();
     } else {
         return "User not found.";
     }
@@ -348,43 +370,53 @@ function createPost($conn, $_post, $globals) {
         raise_error("Post content is empty.");
         return;
     }
-    $insertQuery = "INSERT INTO posts(user_id, post_content) VALUES ('$user_id', '$content')";
-    if ($conn->query($insertQuery) == TRUE) {
+    $insertQuery = $conn->prepare("INSERT INTO posts(user_id, post_content) VALUES (?, ?)");
+    $insertQuery->execute([$user_id, $content]);
+
+    if ($insertQuery == true) {
         header("location: home.php");
     } else {
         raise_error("An error has occured!".htmlspecialchars($conn->error));
     }
+    $insertQuery->close();
 }
 
-function fetchPosts($conn) {
-    $query = mysqli_query($conn,
+function fetchPosts(Mysqli $conn) {
+    $query = $conn->prepare(
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
         FROM posts 
         JOIN users ON posts.user_id = users.user_id 
         LEFT JOIN prof_images ON posts.user_id = prof_images.user_id 
         ORDER BY posts.created_at DESC;"
     );
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
 
     $posts = NULL;
-    if ($query->num_rows != 0) {
-        while($row = $query->fetch_assoc()) {
+    if ($result->num_rows != 0) {
+        while($row = $result->fetch_assoc()) {
             $posts[] = $row;
         }
+        $result->close();
     }
     
     return $posts;
 }
 
-function fetchPostsById($conn,$post_id) {
-    $query = mysqli_query($conn,
+function fetchPostsById(Mysqli $conn, int $post_id) {
+    $query = $conn->prepare(
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
         FROM posts 
         JOIN users ON posts.user_id = users.user_id 
         LEFT JOIN prof_images ON posts.user_id = prof_images.user_id 
-        WHERE posts.post_id = $post_id"
+        WHERE posts.post_id = ?"
     );
+    $query->execute([$post_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    while($row = $query->fetch_assoc()) {
+    while($row = $result->fetch_assoc()) {
         $post[] = $row;
     }
     
@@ -394,27 +426,32 @@ function fetchPostsById($conn,$post_id) {
     return null;
 }
 
-function createComment($conn, $post_id, $content, $user_id): int {
+function createComment(Mysqli $conn, int $post_id, int $user_id, string $content): int {
     $content = htmlspecialchars(trim($content));
     if (empty($content)) {
         raise_error("Comment content is empty.");
         return 0;
     }
-    $insertQuery = "INSERT INTO comments(post_id, user_id, comm_content) VALUES ($post_id,'$user_id','$content')";
-    if ($conn->query($insertQuery) == TRUE) {
-        echo "$content";
+
+    $insertQuery = $conn->prepare("INSERT INTO comments (post_id, user_id, comm_content) VALUES (?, ?, ?)");
+    $insertQuery->bind_param("iis", $post_id, $user_id, $content);
+    $insertQuery->execute();
+
+    if ($insertQuery == TRUE) {
         header("location: comment.php?id=$post_id");
     } else {
         raise_error("An error has occured!".$conn->error);
     }
+    $insertQuery->close();
+
     return 1;
 }
 
-function fetchComments($conn,$post_id) {
+function fetchComments(Mysqli $conn, int $post_id) {
     $post_id = intval($post_id);
 
     // SQL query joins comments with users to show commenter info
-    $sql = mysqli_query($conn,
+    $sql = $conn->prepare(
         "SELECT 
             comments.comm_id,
             comments.created_at,
@@ -427,13 +464,18 @@ function fetchComments($conn,$post_id) {
         FROM comments
         JOIN users ON comments.user_id = users.user_id
         LEFT JOIN prof_images ON comments.user_id = prof_images.user_id
-        WHERE comments.post_id = $post_id
+        WHERE comments.post_id = ?
         ORDER BY comments.created_at DESC
     ");
+    $sql->execute([$post_id]);
 
-    while ($row = $sql->fetch_assoc()) {
+    $result = $sql->get_result();
+    $sql->close();
+
+    while ($row = $result->fetch_assoc()) {
         $comments[] = $row;
     }
+    $result->close();
 
     if(isset($comments))
         return $comments;
@@ -441,73 +483,141 @@ function fetchComments($conn,$post_id) {
     return null;
 }
 
-function handleUserLike($post_id, $user_id) {
+function handleUserLike(Mysqli $conn, int $post_id, int $user_id) {
 
-    $query_likes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
-    if (!mysqli_num_rows($query_likes)) {
+    $query_likes = $conn->prepare("SELECT post_id, user_id FROM likes WHERE likes.post_id = ? AND likes.user_id = ?");
+    $query_likes->execute([$post_id, $user_id]);
+    $result = $query_likes->get_result();
+    $query_likes->close();
+
+    if (!$result->num_rows) {
+        $result->close();
         // User not in likes, add him.
-        $query_likes = mysqli_query($GLOBALS["conn"], "INSERT INTO likes (post_id, user_id) VALUES ('$post_id', '$user_id')");
+        $query_likes = $conn->prepare("INSERT INTO likes (post_id, user_id) VALUES (?, ?)");
+        $query_likes->execute([$post_id, $user_id]);
+        $query_likes->close();
 
         // check if user is in dislikes. If yes remove him. A user can't like and dislike a post at the same time.
-        $query_dislikes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
-        if (mysqli_num_rows($query_dislikes)) {
+        $query_dislikes = $conn->prepare("SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = ? AND dislikes.user_id = ?");
+        $query_dislikes->execute([$post_id, $user_id]);
+        $result = $query_dislikes->get_result();
+        $query_dislikes->close();
+
+        if ($result->num_rows) {
+            $result->close();
             // User in dislikes. Remove him.
-            $query_dislikes = mysqli_query($GLOBALS["conn"], "DELETE FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+            $query_dislikes = $conn->prepare("DELETE FROM dislikes WHERE dislikes.post_id = ? AND dislikes.user_id = ?");
+            $query_dislikes->execute([$post_id, $user_id]);
+            $query_dislikes->close();
         }
     } else {
         // User in likes, remove him.
-        $query_likes = mysqli_query($GLOBALS["conn"], "DELETE FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+        $query_likes = $conn->prepare("DELETE FROM likes WHERE likes.post_id = ? AND likes.user_id = ?");
+        $query_likes->execute([$post_id, $user_id]);
+        $query_likes->close();
     }
 }
 
-function handleUserDislike($post_id, $user_id) {
+function handleUserDislike(Mysqli $conn, int $post_id, int $user_id) {
 
-    $query_dislikes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
-    if (!mysqli_num_rows($query_dislikes)) {
+    $query_dislikes = $conn->prepare("SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = ? AND dislikes.user_id = ?");
+    $query_dislikes->execute([$post_id, $user_id]);
+    $result = $query_dislikes->get_result();
+    $query_dislikes->close();
+
+    if (!$result->num_rows) {
+        $result->close();
         // User not in dislikes, add him.
-        $query_dislikes = mysqli_query($GLOBALS["conn"], "INSERT INTO dislikes (post_id, user_id) VALUES ('$post_id', '$user_id')");
+        $query_dislikes = $conn->prepare("INSERT INTO dislikes (post_id, user_id) VALUES (?, ?)");
+        $query_dislikes->execute([$post_id, $user_id]);
+        $query_dislikes->close();
 
         // check if user is in likes. If yes remove him. A user can't like and dislike a post at the same time.
-        $query_likes = mysqli_query($GLOBALS["conn"], "SELECT post_id, user_id FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
-        if (mysqli_num_rows($query_likes)) {
+        $query_likes = $conn->prepare("SELECT post_id, user_id FROM likes WHERE likes.post_id = ? AND likes.user_id = ?");
+        $query_likes->execute([$post_id, $user_id]);
+        $result = $query_likes->get_result();
+        $query_likes->close();
+
+        if ($result->num_rows) {
+            $result->close();
             // User in likes. Remove him.
-            $query_likes = mysqli_query($GLOBALS["conn"], "DELETE FROM likes WHERE likes.post_id = '$post_id' AND likes.user_id = '$user_id'");
+            $query_likes = $conn->prepare("DELETE FROM likes WHERE likes.post_id = ? AND likes.user_id = ?");
+            $query_likes->execute([$post_id, $user_id]);
+            $query_likes->close();
         }
     } else {
         // User in dislikes, remove him.
-        $query_dislikes = mysqli_query($GLOBALS["conn"], "DELETE FROM dislikes WHERE dislikes.post_id = '$post_id' AND dislikes.user_id = '$user_id'");
+        $query_dislikes = $conn->prepare("DELETE FROM dislikes WHERE dislikes.post_id = ? AND dislikes.user_id = ?");
+        $query_dislikes->execute([$post_id, $user_id]);
+        $query_dislikes->close();
     }
 }
 
-function fetchTotalLikes($conn, $post_id): int {
-    $query_likes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM likes WHERE likes.post_id = $post_id");
+function fetchTotalLikes(Mysqli $conn, int $post_id): int {
+    $query_likes_total = $conn->prepare("SELECT * FROM likes WHERE likes.post_id = ?");
+    $query_likes_total->execute([$post_id]);
+    $result = $query_likes_total->get_result();
+    $query_likes_total->close();
 
-    return mysqli_num_rows($query_likes_total);
+    $likes_total = $result->num_rows;
+    $result->close();
+
+    return $likes_total;
 }
-function fetchTotalDislikes($conn, $post_id): int {
-    $query_dislikes_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM dislikes WHERE dislikes.post_id = $post_id");
+function fetchTotalDislikes(Mysqli $conn, int $post_id): int {
+    $query_dislikes_total = $conn->prepare("SELECT * FROM dislikes WHERE dislikes.post_id = ?");
+    $query_dislikes_total->execute([$post_id]);
+    $result = $query_dislikes_total->get_result();
+    $query_dislikes_total->close();
 
-    return mysqli_num_rows($query_dislikes_total);
+    $dislikes_total = $result->num_rows;
+    $result->close();
+
+    return $dislikes_total;
 }
-function fetchTotalComments($conn, $post_id): int {
-    $query_comments_total = mysqli_query($GLOBALS["conn"], "SELECT * FROM comments WHERE comments.post_id = $post_id");
+function fetchTotalComments(Mysqli $conn, int $post_id): int {
+    $query_comments_total = $conn->prepare("SELECT * FROM comments WHERE comments.post_id = ?");
+    $query_comments_total->execute([$post_id]);
+    $result = $query_comments_total->get_result();
+    $query_comments_total->close();
 
-    return mysqli_num_rows($query_comments_total);
+    $comments_total = $result->num_rows;
+    $result->close();
+
+    return $comments_total;
 }
-function userInLikes($user_id, $post_id): int {
-    $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM likes WHERE likes.user_id = $user_id AND likes.post_id = $post_id");
+function userInLikes(Mysqli $conn, int $user_id, int $post_id): int {
+    $query = $conn->prepare("SELECT user_id FROM likes WHERE likes.user_id = ? AND likes.post_id = ?");
+    $query->execute([$user_id, $post_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    return mysqli_num_rows($query);
+    $userInLikes = $result->num_rows;
+    $result->close();
+
+    return $userInLikes;
 }
-function userInDislikes($user_id, $post_id): int {
-    $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM dislikes WHERE dislikes.user_id = $user_id AND dislikes.post_id = $post_id");
+function userInDislikes(Mysqli $conn, int $user_id, int $post_id): int {
+    $query = $conn->prepare("SELECT user_id FROM dislikes WHERE dislikes.user_id = ? AND dislikes.post_id = ?");
+    $query->execute([$user_id, $post_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    return mysqli_num_rows($query);
+    $userInDislikes = $result->num_rows;
+    $result->close();
+
+    return $userInDislikes;
 }
-function userInComments($user_id, $post_id): int {
-    $query = mysqli_query($GLOBALS["conn"], "SELECT user_id FROM comments WHERE comments.user_id = $user_id AND comments.post_id = $post_id");
+function userInComments(Mysqli $conn, int $user_id, int $post_id): int {
+    $query = $conn->prepare("SELECT user_id FROM comments WHERE comments.user_id = ? AND comments.post_id = ?");
+    $query->execute([$user_id, $post_id]);
+    $result = $query->get_result();
+    $query->close();
 
-    return mysqli_num_rows($query);
+    $userInComments = $result->num_rows;
+    $result->close();
+
+    return $userInComments;
 }
 
 // Funtions which help us avoiding repeating our self. ######################################################

@@ -11,7 +11,7 @@
         $GLOBALS["active_user"] = fetchCurrentUser($conn);
 
         if(isset($_POST["commentCreate"])) {
-            createComment($conn, $post_id, $_POST["comm_content"], $GLOBALS["active_user"]["user_id"]);
+            createComment($conn, $post_id, $GLOBALS["active_user"]["user_id"], $_POST["comm_content"]);
         }
     }
 ?>

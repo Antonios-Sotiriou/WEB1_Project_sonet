@@ -7,9 +7,9 @@
     if (isset($_POST["post_id"])) {
 
         if (isset($_POST["like_post"])) {
-            handleUserLike($_POST["post_id"], $_POST["user_id"]);
+            handleUserLike($GLOBALS["conn"], $_POST["post_id"], $_POST["user_id"]);
         } else if (isset($_POST["dislike_post"])) {
-            handleUserDislike($_POST["post_id"], $_POST["user_id"]);
+            handleUserDislike($GLOBALS["conn"], $_POST["post_id"], $_POST["user_id"]);
         }
 
         $request_data = array(

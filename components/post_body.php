@@ -49,7 +49,7 @@
                     <input type     = "image"
                             class   = "post-interactions-image" 
                             src     = <?php 
-                                if (userInLikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                if (userInLikes($GLOBALS["conn"], $GLOBALS["active_user"]["user_id"], $post["post_id"])) {
                                     echo "images/alreadyliked.png";
                                 } else {
                                     echo "images/like.png"; 
@@ -67,7 +67,7 @@
                         <a href="comment.php?id=<?php echo $post['post_id']; ?>"> <!-- Änderung to work with comments -->
                             <img class  ="post-interactions-image"
                                 src     = <?php 
-                                    if (userInComments($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                    if (userInComments($GLOBALS["conn"], $GLOBALS["active_user"]["user_id"], $post["post_id"])) {
                                         echo "images/alreadycommented.png"; 
                                     } else {
                                         echo "images/comment.png"; 
@@ -86,7 +86,7 @@
                     <input type     = "image" 
                             class   = "post-interactions-image" 
                             src     = <?php 
-                                if (userInDislikes($GLOBALS["active_user"]["user_id"], $post["post_id"])) {
+                                if (userInDislikes($GLOBALS["conn"], $GLOBALS["active_user"]["user_id"], $post["post_id"])) {
                                     echo "images/alreadydisliked.png";
                                 } else {
                                     echo "images/dislike.png"; 
