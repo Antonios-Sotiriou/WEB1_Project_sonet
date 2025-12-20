@@ -5,6 +5,7 @@ use Dom\Mysql;
 function dbconnect() {
     $host = "localhost";
     $user = "root";
+    //$user = "guest";
     $pass = "";
     //$pass = "Z3KDHonGY@vmRw0)";
     $db = "web1_project_sonet";
