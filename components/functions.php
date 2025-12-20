@@ -411,7 +411,10 @@ function fetchAllUserComments(Mysqli $conn, int $user_id){
         $post[] = $row;
     }
 
-    return $post;
+    if(isset($post))
+        return $post;
+
+    return null;
 }
 
 function fetchUserInfo(Mysqli $conn, string $first_name, string $last_name, int $user_id) {
