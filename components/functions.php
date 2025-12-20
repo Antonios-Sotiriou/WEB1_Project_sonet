@@ -1,9 +1,12 @@
 <?php
 
+use Dom\Mysql;
+
 function dbconnect() {
     $host = "localhost";
-    $user = "guest";
-    $pass = "Z3KDHonGY@vmRw0)";
+    $user = "root";
+    $pass = "";
+    //$pass = "Z3KDHonGY@vmRw0)";
     $db = "web1_project_sonet";
     $conn = new mysqli($host, $user, $pass, $db);
 
@@ -338,6 +341,79 @@ function fetchUserTotalPosts(Mysqli $conn, int $user_id) : int {
     return 0;
 }
 
+function deleteUser(Mysqli $conn,int $user_id){
+    $deletquery = $conn->prepare(
+        "DELETE FROM users WHERE users.user_id = $user_id"
+    );
+
+    $deletquery->execute();
+} 
+
+function fetchUserById(Mysqli $conn,int $user_id){
+    $query = $conn->prepare(
+        "SELECT * FROM users WHERE users.user_id = $user_id"
+    );
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+
+    while($row = $result->fetch_assoc()) {
+        $user[] = $row;
+    }
+
+    return $user[0];
+}
+
+function fetchAllUsers(Mysqli $conn){
+    $query = $conn->prepare(
+        "SELECT * FROM users ORDER BY users.user_id"
+    );
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+
+    return $result;
+}
+
+function fetchAllUserPosts(Mysqli $conn, int $user_id){
+    $query = $conn->prepare(
+        "SELECT posts.post_id, posts.created_at, posts.post_content
+        FROM posts
+        WHERE posts.user_id = $user_id
+        ORDER BY posts.created_at DESC;"
+    );
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+
+    while($row = $result->fetch_assoc()) {
+        $post[] = $row;
+    }
+
+    if(isset($post))
+        return $post;
+
+    return null;
+}
+
+function fetchAllUserComments(Mysqli $conn, int $user_id){
+    $query = $conn->prepare(
+        "SELECT comments.comm_id, comments.created_at, comments.comm_content
+        FROM comments
+        WHERE comments.user_id = $user_id
+        ORDER BY comments.created_at DESC;"
+    );
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+
+    while($row = $result->fetch_assoc()) {
+        $post[] = $row;
+    }
+
+    return $post;
+}
+
 function fetchUserInfo(Mysqli $conn, string $first_name, string $last_name, int $user_id) {
     $query = $conn->prepare(
         "SELECT first_name, last_name, date_joined FROM users 
@@ -379,6 +455,14 @@ function createPost($conn, $_post, $globals) {
         raise_error("An error has occured!".htmlspecialchars($conn->error));
     }
     $insertQuery->close();
+}
+
+function deletePost(mysqli $conn,int $post_id){
+    $deletequery = $conn->prepare(
+        "DELETE FROM posts WHERE posts.post_id = $post_id"
+    );
+
+    $deletequery->execute();
 }
 
 function fetchPosts(Mysqli $conn) {
@@ -445,6 +529,14 @@ function createComment(Mysqli $conn, int $post_id, int $user_id, string $content
     $insertQuery->close();
 
     return 1;
+}
+
+function deleteComment(mysqli $conn,int $comment_id){
+    $deletequery = $conn->prepare(
+        "DELETE FROM comments WHERE comments.comm_id = $comment_id"
+    );
+
+    $deletequery->execute();
 }
 
 function fetchComments(Mysqli $conn, int $post_id) {
