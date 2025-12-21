@@ -1,4 +1,7 @@
 <?php
+
+use Dom\Comment;
+
     session_start();
     include("components/functions.php");
 
@@ -69,7 +72,7 @@
         <?php if($comments!=null ) {?>
             <?php foreach($comments as $comment) { ?>
 
-                <div class="article-main-container">
+                <div class="article-main-container" id="<?php echo $comment["comm_id"]?>">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="post-header">
