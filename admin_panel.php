@@ -59,8 +59,13 @@
                         <td><?php echo $user["last_name"] ?></td>
                         <td><?php echo $user["email"] ?></td>
                         <td style="text-align: center;"><?php echo isAdmin($conn,$user["user_id"]) ? 'Yes' : 'No' ?></td>
-                        <td style="text-align: center;" ><a href="user_PostsAndComments.php?id=<?php echo $user['user_id']; ?>">
-                                Click here
+                        <td style="text-align: center;" >
+                            <a href="user_Posts.php?id=<?php echo $user['user_id']; ?>" style="margin: 0px 10px">
+                                Posts
+                            </a>
+                            
+                            <a href="user_Comments.php?id=<?php echo $user['user_id']; ?>" style="margin: 0px 10px">
+                                Comments
                             </a>
                         </td>
                         <td>
