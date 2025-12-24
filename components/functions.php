@@ -397,7 +397,7 @@ function fetchAllUserPosts(Mysqli $conn, int $user_id){
 
 function fetchAllUserComments(Mysqli $conn, int $user_id){
     $query = $conn->prepare(
-        "SELECT comments.comm_id, comments.created_at, comments.comm_content
+        "SELECT comments.comm_id, comments.created_at, comments.comm_content, comments.post_id
         FROM comments
         WHERE comments.user_id = $user_id
         ORDER BY comments.created_at DESC;"
