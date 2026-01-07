@@ -1,7 +1,5 @@
 <?php
 
-use Dom\Mysql;
-
 function dbconnect() {
     $host = "localhost";
     $user = "guest";
@@ -15,7 +13,6 @@ function dbconnect() {
 
     return $conn;
 }
-
 function userLogIn(Mysqli $conn, array $info) {
     $email = htmlspecialchars($info["email"]);
 
@@ -43,7 +40,6 @@ function userLogIn(Mysqli $conn, array $info) {
     $retrieve_user->close();
     $result->close();
 }
-
 function verifyFirstName(string $firstName) {
 
     $first_name = trim($firstName);
@@ -59,7 +55,6 @@ function verifyFirstName(string $firstName) {
 
     return $first_name;
 }
-
 function verifyLastName(string $lastName) {
 
     $last_name = trim($lastName);
@@ -75,7 +70,6 @@ function verifyLastName(string $lastName) {
 
     return $last_name;
 }
-
 function userRegister(Mysqli $conn, array $_post) {
 
     $first_name = verifyFirstName($_post["firstName"]);
@@ -126,7 +120,6 @@ function userRegister(Mysqli $conn, array $_post) {
         raise_error('Passwords not matching. Please check for typing mistakes.');
     }
 }
-
 function userUpdate(Mysqli $conn, array $_post, array $user): int {
     $error = 0;
     $user_id = $user["user_id"];
@@ -168,7 +161,6 @@ function userUpdate(Mysqli $conn, array $_post, array $user): int {
     header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
     return 1;
 }
-
 function uploadImage(Mysqli $conn, array $img, array $user): int {
     $check = getimagesize($img["tmp_name"]);
     if ($check === false) {
@@ -231,7 +223,6 @@ function uploadImage(Mysqli $conn, array $img, array $user): int {
 
     return 1;
 }
-
 function allowedImages() {
     $allowed = array (
         "image/pjpeg","image/jpeg", "image/JPG", 
@@ -241,7 +232,6 @@ function allowedImages() {
     
     return $allowed;
 }
-
 function isAdmin(Mysqli $conn, int $user_id): int {
     $query = $conn->prepare( 
         "SELECT * FROM admins WHERE admins.user_id = ?"
@@ -257,7 +247,6 @@ function isAdmin(Mysqli $conn, int $user_id): int {
 
     return $num_of_rows;
 }
-
 function fetchCurrentUser(Mysqli $conn) {
 
     if (isset($_SESSION["email"])) {
@@ -298,7 +287,6 @@ function fetchCurrentUser(Mysqli $conn) {
 
     return $globals;
 }
-
 function fetchUserProfilePhoto(Mysqli $conn, int $user_id) {
     $query = $conn->prepare( 
         "SELECT users.email, prof_images.img_name FROM users 
@@ -324,7 +312,6 @@ function fetchUserProfilePhoto(Mysqli $conn, int $user_id) {
 
     return "media/".md5($email)."/".$img_name;
 }
-
 function fetchUserTotalPosts(Mysqli $conn, int $user_id) : int {
     $query = $conn->prepare(
         "SELECT * FROM posts WHERE posts.user_id = ?"
@@ -339,20 +326,33 @@ function fetchUserTotalPosts(Mysqli $conn, int $user_id) : int {
 
     return 0;
 }
-
-function deleteUser(Mysqli $conn,int $user_id){
-    $deletquery = $conn->prepare(
-        "DELETE FROM users WHERE users.user_id = $user_id"
-    );
-
-    $deletquery->execute();
-} 
-
-function fetchUserById(Mysqli $conn,int $user_id){
+function fetchUserTotalComments(Mysqli $conn, int $user_id) : int {
     $query = $conn->prepare(
-        "SELECT * FROM users WHERE users.user_id = $user_id"
+        "SELECT * FROM comments WHERE comments.user_id = ?"
     );
-    $query->execute();
+    $query->execute([$user_id]);
+    $result = $query->get_result();
+    $query->close();
+
+    if ($result->num_rows) {
+        return $result->num_rows;
+    }
+
+    return 0;
+}
+function deleteUser(Mysqli $conn,int $user_id) {
+    $query = $conn->prepare(
+        "DELETE FROM users WHERE users.user_id = ?"
+    );
+
+    $query->execute([$user_id]);
+    $query->close();
+}
+function fetchUserById(Mysqli $conn,int $user_id) {
+    $query = $conn->prepare(
+        "SELECT * FROM users WHERE users.user_id = ?"
+    );
+    $query->execute([$user_id]);
     $result = $query->get_result();
     $query->close();
 
@@ -362,10 +362,11 @@ function fetchUserById(Mysqli $conn,int $user_id){
 
     return $user[0];
 }
-
-function fetchAllUsers(Mysqli $conn){
+function fetchAllUsers(Mysqli $conn) {
     $query = $conn->prepare(
-        "SELECT * FROM users ORDER BY users.user_id"
+        "SELECT x.user_id, x.first_name, x.last_name, x.email, x.date_joined, y.img_name  
+            FROM users x LEFT JOIN prof_images y ON x.user_id = y.user_id 
+        ORDER BY x.user_id;"
     );
     $query->execute();
     $result = $query->get_result();
@@ -373,15 +374,14 @@ function fetchAllUsers(Mysqli $conn){
 
     return $result;
 }
-
-function fetchAllUserPosts(Mysqli $conn, int $user_id){
+function fetchAllUserPosts(Mysqli $conn, int $user_id) {
     $query = $conn->prepare(
         "SELECT posts.post_id, posts.created_at, posts.post_content
         FROM posts
-        WHERE posts.user_id = $user_id
+        WHERE posts.user_id = ?
         ORDER BY posts.created_at DESC;"
     );
-    $query->execute();
+    $query->execute([$user_id]);
     $result = $query->get_result();
     $query->close();
 
@@ -394,15 +394,14 @@ function fetchAllUserPosts(Mysqli $conn, int $user_id){
 
     return null;
 }
-
-function fetchAllUserComments(Mysqli $conn, int $user_id){
+function fetchAllUserComments(Mysqli $conn, int $user_id) {
     $query = $conn->prepare(
         "SELECT comments.comm_id, comments.created_at, comments.comm_content, comments.post_id
         FROM comments
-        WHERE comments.user_id = $user_id
+        WHERE comments.user_id = ?
         ORDER BY comments.created_at DESC;"
     );
-    $query->execute();
+    $query->execute([$user_id]);
     $result = $query->get_result();
     $query->close();
 
@@ -415,7 +414,6 @@ function fetchAllUserComments(Mysqli $conn, int $user_id){
 
     return null;
 }
-
 function fetchUserInfo(Mysqli $conn, string $first_name, string $last_name, int $user_id) {
     $query = $conn->prepare(
         "SELECT first_name, last_name, date_joined FROM users 
@@ -439,7 +437,6 @@ function fetchUserInfo(Mysqli $conn, string $first_name, string $last_name, int 
 
     return $user_info;
 }
-
 function createPost($conn, $_post, $globals) {
     $user_id = $globals["active_user"]["user_id"];
     $content = htmlspecialchars(trim($_POST["post_content"]));
@@ -458,7 +455,6 @@ function createPost($conn, $_post, $globals) {
     }
     $insertQuery->close();
 }
-
 function deletePost(mysqli $conn,int $post_id){
     $deletequery = $conn->prepare(
         "DELETE FROM posts WHERE posts.post_id = $post_id"
@@ -466,7 +462,6 @@ function deletePost(mysqli $conn,int $post_id){
 
     $deletequery->execute();
 }
-
 function fetchPosts(Mysqli $conn) {
     $query = $conn->prepare(
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
@@ -489,7 +484,6 @@ function fetchPosts(Mysqli $conn) {
     
     return $posts;
 }
-
 function fetchPostsById(Mysqli $conn, int $post_id) {
     $query = $conn->prepare(
         "SELECT posts.post_id, posts.created_at, posts.post_content, users.user_id, users.first_name, users.last_name, users.email, prof_images.img_name 
@@ -511,7 +505,6 @@ function fetchPostsById(Mysqli $conn, int $post_id) {
 
     return null;
 }
-
 function createComment(Mysqli $conn, int $post_id, int $user_id, string $content): int {
     $content = htmlspecialchars(trim($content));
     if (empty($content)) {
@@ -532,15 +525,13 @@ function createComment(Mysqli $conn, int $post_id, int $user_id, string $content
 
     return 1;
 }
-
-function deleteComment(mysqli $conn,int $comment_id){
-    $deletequery = $conn->prepare(
-        "DELETE FROM comments WHERE comments.comm_id = $comment_id"
+function deleteComment(mysqli $conn,int $comment_id) {
+    $query = $conn->prepare(
+        "DELETE FROM comments WHERE comments.comm_id = ?"
     );
 
-    $deletequery->execute();
+    $query->execute([$comment_id]);
 }
-
 function fetchComments(Mysqli $conn, int $post_id) {
     $post_id = intval($post_id);
 
@@ -576,7 +567,6 @@ function fetchComments(Mysqli $conn, int $post_id) {
 
     return null;
 }
-
 function handleUserLike(Mysqli $conn, int $post_id, int $user_id) {
 
     $query_likes = $conn->prepare("SELECT post_id, user_id FROM likes WHERE likes.post_id = ? AND likes.user_id = ?");
@@ -611,7 +601,6 @@ function handleUserLike(Mysqli $conn, int $post_id, int $user_id) {
         $query_likes->close();
     }
 }
-
 function handleUserDislike(Mysqli $conn, int $post_id, int $user_id) {
 
     $query_dislikes = $conn->prepare("SELECT post_id, user_id FROM dislikes WHERE dislikes.post_id = ? AND dislikes.user_id = ?");
@@ -646,7 +635,6 @@ function handleUserDislike(Mysqli $conn, int $post_id, int $user_id) {
         $query_dislikes->close();
     }
 }
-
 function fetchTotalLikes(Mysqli $conn, int $post_id): int {
     $query_likes_total = $conn->prepare("SELECT * FROM likes WHERE likes.post_id = ?");
     $query_likes_total->execute([$post_id]);
@@ -713,7 +701,6 @@ function userInComments(Mysqli $conn, int $user_id, int $post_id): int {
 
     return $userInComments;
 }
-
 // Funtions which help us avoiding repeating our self. ######################################################
 function displayHeader($page_title, $style_css) {
     echo "
@@ -730,7 +717,6 @@ function displayHeader($page_title, $style_css) {
         </html>
     ";
 }
-
 // Helper Functions ######################################################
 function raise_error($error_message) {
     echo "<h3 style='text-align: center;'>".$error_message."</h3>";

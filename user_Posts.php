@@ -24,14 +24,16 @@
     }
 ?>
 
-<?php displayHeader("admin_panel", "css/home_style.css"); ?>
+<?php displayHeader("admin_panel", "css/home_style.css");
+    echo "<link rel='stylesheet' href='css/user_posts.css'>";
+?>
 
 <body class="body-fluid">
 
     <?php include_once("components/navbar.php"); ?>
     
     <p>
-        <a href="admin_panel.php"> /Previous page</a>
+        <a id="go-back-link" class="btn btn-primary" href="admin_panel.php" role="button" id="cancel-btn">Go Back</a>
     </p>
 
     <?php
@@ -47,26 +49,27 @@
             User <?php echo $user["first_name"]." ".$user["last_name"]?>
         </h1>
     </div>
+    <h1 style="text-align: center;">Posts list</h1>
 
     <form method="post">
-    
-    <div class="posts-container">
-        <div class="article-main-container">
-            <h1 style="text-align: center;">Posts list</h1>
-            <?php  
-            if(isset($posts))
-                foreach($posts as $post){
-            ?>
-            <div style="margin-top: 25px;">
-                <div>
-                <b>Post with id: #<?php echo $post["post_id"]?></b>
+        <div class="posts-container">
+            <div class="article-main-container">
+                <?php  
+                if(isset($posts))
+                    foreach($posts as $post){
+                ?>
+                <div class="admin-panel-post">
                     <div class ="card md-4">
-                        <div class="text-muted small">
-                            <?php echo "Post created at: ".date("d.m.Y, H:i", strtotime($post["created_at"])); ?>
+                        <div class="post-id-container">
+                            Post ID: #<?php echo $post["post_id"]?>
                         </div>
-                        <div style="padding-top: 15px;">
-                            <p><?php echo $post["post_content"]?></p>
+                        <div class="post-date-container">
+                            <?php echo "Created at: ".date("d.m.Y, H:i", strtotime($post["created_at"])); ?>
                         </div>
+                        <div>
+                            <p class="post-content"><?php echo $post["post_content"]?></p>
+                        </div>
+
                         <div class="post-footer">
                             <div class="post-footer-info-container">
                                 <div class="post-footer-info" id=<?php echo "post_".$post["post_id"]."_likes_info"; ?> >
@@ -79,39 +82,26 @@
                                     <?php echo fetchTotalDislikes($conn, $post["post_id"])." Dislikes"; ?>
                                 </div>
                             </div>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-md" style="display: flex; align-items: center;">
-                                        <a href="comment.php?id=<?php echo $post['post_id']; ?>">
-                                            Find Post
-                                        </a>
-                                    </div>
-                                    <div class="col-md" style="text-align: right;">
-                                        <button type="submit" name="clickedPost" value="<?php echo $post['post_id']; ?>"
-                                            style="background-color: rgb(255, 52, 52); color: white; border: 1px solid #0a53be; border-radius: 4px;
-                                            margin: 6px">
-                                            Delete Post
-                                        </button>
-                                    </div>
+                            <div class="admin-post-actions-container">
+                                <div class="col-md" style="display: flex; align-items: center;">
+                                    <a id="goto-post-link" class="btn btn-primary" href="comment.php?id=<?php echo $post['post_id']; ?>" role="button">Go to Post</a>
+                                </div>
+                                <div class="delete-post-container">
+                                    <button class="delete-post-button" type="submit" name="clickedPost" value="<?php echo $post['post_id']; ?>">
+                                        Delete Post
+                                    </button>  
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <?php
+                    }
+                else
+                    echo "<p style='text-align:center'>User has no Posts</p>";
+                ?>
             </div>
-            <?php
-                }
-            else
-                echo "<p style='text-align:center'>User has no Posts</p>";
-            ?>
         </div>
-    </div>
-    
-    
     </form>
-    
-
-    <script type="text/javascript" src="scripts_js/like_dislike.js"></script>
-
 </body>
 </html>
