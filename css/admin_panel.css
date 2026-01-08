@@ -1,0 +1,75 @@
+.admin-panel-main-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.user-admin-panel-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0.5vh;
+    object-fit: cover;
+}
+.user-admin-panel-info {
+    display: flex;
+    flex-wrap: wrap;
+}
+.individual-info {
+    font-size: small;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 2px;
+    border-width: 2px;
+    border-color: lightgray;
+    border-style: solid;
+    padding: 4px;
+}
+.admin-panel-user-actions-container {
+    display: flex;
+    flex: 1;
+    justify-content: end;
+}
+.goto-link-container {
+    padding: 7px;
+    text-wrap: nowrap;
+}
+#goto-link {
+    font-size: small;
+    --bs-btn-padding-x: 5px;
+    --bs-btn-padding-y: 5px;
+}
+.delete-user-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 5px;
+}
+.delete-user-button {
+    font-size: small;
+    background-color: rgb(225, 52, 52);
+    color: white;
+    border: 1px solid #0a53be;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+@media all and (max-width: 301px) {
+    .admin-panel-user-actions-container {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    .delete-user-container {
+        margin-left: 5px;
+    }
+}
+@media all and (max-width: 301px) and (min-width: 239px) {
+    .delete-user-container {
+        margin-bottom: 5px;
+    }
+}
+@media all and (max-width: 185px) {
+    .delete-user-container {
+        margin-bottom: 5px;
+    }
+}

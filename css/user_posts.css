@@ -1,0 +1,45 @@
+#go-back-link {
+    margin: 5px;
+}
+.admin-panel-post {
+    margin: 20px 5px 5px 5px;
+}
+.post-id-container {
+    margin: 0px 0px 0px 5px;
+}
+.post-date-container {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: small;
+    box-sizing: border-box;
+    border-bottom: 5px;
+    border-bottom-style: none;
+    border-bottom-color: currentcolor;
+    border-bottom-style: solid;
+    border-bottom-color: lightgray;
+}
+.post-content {
+    margin: 5px 5px 1em 5px;
+}
+.admin-post-actions-container {
+    display: flex;
+}
+#goto-post-link {
+    margin: 5px;
+    font-size: small;
+}
+.delete-post-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: end;
+    margin-right: 5px;
+}
+.delete-post-button {
+    font-size: small;
+    background-color: rgb(225, 52, 52);
+    color: white;
+    border: 1px solid #0a53be;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
