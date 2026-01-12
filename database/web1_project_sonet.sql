@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 01. Dez 2025 um 23:50
+-- Erstellungszeit: 09. Jan 2026 um 14:21
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -73,7 +73,9 @@ INSERT INTO `comments` (`comm_id`, `post_id`, `user_id`, `created_at`, `comm_con
 (12, 25, 14, '2025-12-01 23:48:21', 'Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.'),
 (13, 27, 22, '2025-12-01 23:48:21', 'Suspendisse potenti.'),
 (14, 25, 13, '2025-12-01 23:48:21', 'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum.'),
-(15, 26, 19, '2025-12-01 23:48:21', 'Donec semper sapien a libero.');
+(15, 26, 19, '2025-12-01 23:48:21', 'Donec semper sapien a libero.'),
+(16, 29, 25, '2025-12-10 21:34:49', 'Der große Oxmox riet ihr davon ab, da es dort wimmele von bösen Kommata, wilden Fragezeichen und hinterhältigen Semikoli, doch das Blindtextchen ließ sich nicht beirren.'),
+(18, 30, 11, '2026-01-09 00:51:26', 'Überall dieselbe alte Leier. Das Layout ist fertig, der Text lässt auf sich warten. Damit das Layout nun nicht nackt im Raume steht und sich klein und leer vorkommt, springe ich ein: der Blindtext.');
 
 -- --------------------------------------------------------
 
@@ -91,7 +93,9 @@ CREATE TABLE `dislikes` (
 --
 
 INSERT INTO `dislikes` (`user_id`, `post_id`) VALUES
-(22, 25);
+(22, 25),
+(11, 26),
+(25, 29);
 
 -- --------------------------------------------------------
 
@@ -114,7 +118,9 @@ INSERT INTO `likes` (`user_id`, `post_id`) VALUES
 (22, 26),
 (12, 29),
 (12, 26),
-(12, 25);
+(12, 25),
+(25, 25),
+(11, 27);
 
 -- --------------------------------------------------------
 
@@ -138,7 +144,8 @@ INSERT INTO `posts` (`post_id`, `created_at`, `user_id`, `post_content`) VALUES
 (26, '2025-11-28 08:59:37', 21, 'Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans.'),
 (27, '2025-11-28 14:42:27', 22, 'Als es die ersten Hügel des Kursivgebirges erklommen hatte, warf es einen letzten Blick zurück auf die Skyline seiner Heimatstadt Buchstabhausen, die Headline von Alphabetdorf und die Subline seiner eigenen Straße, der Zeilengasse. Wehmütig lief ihm eine rhetorische Frage über die Wange, dann setzte es seinen Weg fort. '),
 (28, '2025-11-28 23:04:55', NULL, 'Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte.'),
-(29, '2025-11-28 23:10:58', 11, 'Tages aber beschloß eine kleine Zeile Blindtex!');
+(29, '2025-11-28 23:10:58', 11, 'Tages aber beschloß eine kleine Zeile Blindtex!'),
+(30, '2025-12-10 20:32:23', 25, 'Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen. Nicht einmal von der allmächtigen Interpunktion werden die Blindtexte beherrscht – ein geradezu unorthographisches Leben.');
 
 -- --------------------------------------------------------
 
@@ -160,7 +167,9 @@ INSERT INTO `prof_images` (`img_id`, `img_name`, `user_id`) VALUES
 (26, 'white_puppy.jpg', 21),
 (27, 'man_with_clockeyes.jpg', 11),
 (28, 'bear_on_the_beach.jpg', 22),
-(29, 'holiday_house.jpg', 12);
+(29, 'holiday_house.jpg', 12),
+(30, 'curious-boxer-dog.jpg', 25),
+(32, 'Antonios_Sotiriou.jpg', 28);
 
 -- --------------------------------------------------------
 
@@ -194,7 +203,13 @@ INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `date_joined
 (19, 'Fianna', 'Gocher', 'fgocher7@addtoany.com', '2025-11-28', '$2y$10$dok1r9M9lxQyR2nLV5UFi.AxRyH5YteZODBi6Cs9/TeYYgiRtzyh6'),
 (20, 'Lucio', 'Healy', 'lhealy8@feedburner.com', '2025-11-28', '$2y$10$qb7vXnich4u5kjcuXiajrepTsKZHF0j8GdPw/zfPn9ZF5tiBt5ykS'),
 (21, 'Seline', 'Burniston', 'sburniston9@yelp.com', '2025-11-28', '$2y$10$2axyluEqZmebmrX5AT1A5OlEAhLjdk.X8czSJp/Ln80y1Ntbi9qyC'),
-(22, 'Michael', 'Salivan', 'michaelsal@hotmail.com', '2025-11-28', '$2y$10$DPmLFE6zdSu6Ti8btA/0A.RwnG2osmbLywiXSrVyp5CEkzD/bT2z2');
+(22, 'Michael', 'Salivan', 'michaelsal@hotmail.com', '2025-11-28', '$2y$10$DPmLFE6zdSu6Ti8btA/0A.RwnG2osmbLywiXSrVyp5CEkzD/bT2z2'),
+(23, 'Donald', 'Duck', 'donaldduck@gmail.com', '2025-12-10', '$2y$10$SMT0OyclsBXyZ4OL4JNX0uj7CO3vLye5oUHj0eJKyD3SHKPPfSNmi'),
+(24, 'Dagobert', 'Duck', 'dagobertduck@gmail.com', '2025-12-10', '$2y$10$mXVLw.YEG0zBpXpKef6ib.2BtNgC32qF5Odv7uPdKWEgwHcGe/dCG'),
+(25, 'Huey', 'Duck', 'hueyduck@gmail.com', '2025-12-10', '$2y$10$0W0dA8heQhF00CMe5mPVDeuZoQByQs7A24t0e7AVLkXWznsD1krPC'),
+(26, 'Dewey', 'Duck', 'deweyduck@gmail.com', '2025-12-10', '$2y$10$lSU5hez3buu1DPjEzZZhb.WuJcWbV11WVDLyxaUoDv7aIUCfnCkpS'),
+(27, 'Louie', 'Duck', 'louieduck@gmail.com', '2025-12-10', '$2y$10$ONoH2xdjO8QM0QvEycp/AebAZaQ6oLK04iQkigRXi/FddvHbUJOpW'),
+(28, 'Antonios', 'Sotiriou', 'as@hotmail.gr', '2025-12-10', '$2y$10$/E9JCxHEaqqtfa80vb6Q/eG1aUbPNCO3jG1pzaDzzsBIpVfD7jUtu');
 
 --
 -- Indizes der exportierten Tabellen
@@ -256,25 +271,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `comm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT für Tabelle `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT für Tabelle `prof_images`
 --
 ALTER TABLE `prof_images`
-  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Constraints der exportierten Tabellen

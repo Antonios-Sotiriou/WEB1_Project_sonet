@@ -17,7 +17,12 @@
     }
 
     if (isset($_POST['clicked'])) {
-        deleteUser($conn,$_POST['clicked']);
+        if ($_POST['clicked'] == $GLOBALS["active_user"]["user_id"]) {
+            raise_error("You can't delete your self.");
+        } else {
+            deleteUser($conn,$_POST['clicked']);
+            echo "<h3 style='text-align: center;'>User succesfully deleted.</h3>";
+        }
     }
 ?>
 
