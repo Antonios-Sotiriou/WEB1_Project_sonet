@@ -122,24 +122,24 @@ function userRegister(Mysqli $conn, array $_post) {
 }
 function userUpdate(Mysqli $conn, array $_post, array $user): int {
     $error = 0;
-    $user_id = $user["user_id"];
+    $user_credentials = array();
     $queries_array = array();
 
     if (!empty($_post["firstName"])) {
-        $first_name = verifyFirstName($_post["firstName"]);
-        if (empty($first_name)) {
+        $user_credentials[0] = verifyFirstName($_post["firstName"]);
+        if (empty($user_credentials[0])) {
             $error = 1;
         } else {
-            $queries_array[] = $conn->prepare("UPDATE users SET first_name = '$first_name' WHERE user_id = $user_id");
+            $queries_array[] = $conn->prepare("UPDATE users SET first_name = ? WHERE user_id = ?");
         }
     }
 
     if (!empty($_post["lastName"])) {
-        $last_name = verifyLastName($_post["lastName"]);
-        if (empty($last_name)) {
+        $user_credentials[1] = verifyLastName($_post["lastName"]);
+        if (empty($user_credentials[1])) {
             $error = 1;
         } else {
-            $queries_array[] = $conn->prepare("UPDATE users SET last_name = '$last_name' WHERE user_id = '$user_id'");
+            $queries_array[] = $conn->prepare("UPDATE users SET last_name = ? WHERE user_id = ?");
         }
     }
 
@@ -150,15 +150,18 @@ function userUpdate(Mysqli $conn, array $_post, array $user): int {
             $error = 1;
         }
     }
+
     if ($error) {
         return 0;
     } else {
+        $counter = 0;
         foreach ($queries_array as $query) {
-            $query->execute();
+            $query->execute([$user_credentials[$counter], $user["user_id"]]);
             $query->close();
+            $counter++;
         }
     }
-    header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user_id);
+    header('Location: profile.php?firstName='.$user["first_name"].'&lastName='.$last_name.'&user_id='.$user["user_id"]);
     return 1;
 }
 function uploadImage(Mysqli $conn, array $img, array $user): int {
