@@ -126,19 +126,21 @@ function userUpdate(Mysqli $conn, array $_post, array $user): int {
     $queries_array = array();
 
     if (!empty($_post["firstName"])) {
-        $user_credentials[0] = verifyFirstName($_post["firstName"]);
-        if (empty($user_credentials[0])) {
+        $first_name = verifyFirstName($_post["firstName"]);
+        if (empty($first_name)) {
             $error = 1;
         } else {
+            $user_credentials[] = $first_name;
             $queries_array[] = $conn->prepare("UPDATE users SET first_name = ? WHERE user_id = ?");
         }
     }
 
     if (!empty($_post["lastName"])) {
-        $user_credentials[1] = verifyLastName($_post["lastName"]);
-        if (empty($user_credentials[1])) {
+        $last_name = verifyLastName($_post["lastName"]);
+        if (empty($last_name)) {
             $error = 1;
         } else {
+            $user_credentials[] = $last_name;
             $queries_array[] = $conn->prepare("UPDATE users SET last_name = ? WHERE user_id = ?");
         }
     }
